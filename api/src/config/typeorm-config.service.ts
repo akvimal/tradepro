@@ -7,9 +7,19 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
   constructor(private configService: ConfigService) {}
 
   createTypeOrmOptions(): TypeOrmModuleOptions {
+    
     return {
       type: 'postgres',
-      url: process.env.DATABASE_URL,
+      // url: 'postgresql://postgres:postgres@localhost:5432/tradeprodb',//process.env.DATABASE_URL,
+      // url: this.configService.get<string>('POSTGRES_URL'),
+      //       username: this.configService.get<string>('POSTGRES_USER'),
+      //       password: this.configService.get<string>('POSTGRES_PASSWORD'),
+
+      database: this.configService.get('DB_NAME'),
+            host: this.configService.get('DB_HOST'),
+            port: this.configService.get('DB_PORT'),
+            username: this.configService.get('DB_USER'),
+            password: this.configService.get('DB_PASSWORD'),
       dropSchema: false,
       keepConnectionAlive: true,
       logging: this.configService.get('NODE_ENV') !== 'production',
