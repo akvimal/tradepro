@@ -1,0 +1,17 @@
+services:
+  
+  frontend:
+    build:
+      dockerfile: Dockerfile
+      context: ./frontend
+    ports:
+      - 8000:80
+    networks:
+      - local
+      
+networks:
+  local:
+
+volumes:
+    tradeprodata:
+        external: true

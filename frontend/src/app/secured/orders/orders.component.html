@@ -1,0 +1,27 @@
+<h5>Orders</h5>
+<table>
+    <tr>
+        <th>Order</th>
+        <th>Trigger Date</th>
+        <th>Symbol</th>
+        <th>Entry Qty</th>
+        <th>Entry Pr.</th>
+        <th>Entry Date</th>
+        <th>Exit Qty</th>
+        <th>Exit Pr.</th>
+        <th>Exit Date</th>
+        <th>Status</th>
+    </tr>
+    <tr *ngFor="let o of orders">
+        <td>{{o.trans_type}}</td>
+        <td>{{o.trigger_dt | date : 'dd-MM HH:mm'}}</td>
+        <td>{{o.symbol}}</td>
+        <td>{{o.entry_qty}}</td>
+        <td>{{o.entry_price}}</td>
+        <td>{{o.order_dt | date : 'dd-MM HH:mm'}}</td>
+        <td>{{o.exit_qty}}</td>
+        <td>{{o.exit_price}}</td>
+        <td></td>
+        <td>{{o.status}}</td>
+    </tr>
+</table>

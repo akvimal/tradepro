@@ -1,0 +1,281 @@
+{
+        "dhanClientId": "1101121515",
+        "orderId": "4125010313874",
+        "exchangeOrderId": "1000000012317254",
+        "correlationId": "TV_OrderWindow",
+        "orderStatus": "TRADED",
+        "transactionType": "BUY",
+        "exchangeSegment": "NSE_EQ",
+        "productType": "CO",
+        "orderType": "LIMIT",
+        "validity": "DAY",
+        "tradingSymbol": "AUBANK",
+        "securityId": "21238",
+        "quantity": 1,
+        "disclosedQuantity": 0,
+        "price": 586.0,
+        "triggerPrice": 0.0,
+        "afterMarketOrder": false,
+        "boProfitValue": 0.0,
+        "boStopLossValue": 0.0,
+        "legName": "ENTRY_LEG",
+        "createTime": "2025-01-03 10:11:09",
+        "updateTime": "2025-01-03 10:11:09",
+        "exchangeTime": "2025-01-03 10:11:09",
+        "drvExpiryDate": "0001-01-01",
+        "drvOptionType": "NA",
+        "drvStrikePrice": 0.0,
+        "omsErrorCode": "0",
+        "omsErrorDescription": "TRADE CONFIRMED",
+        "algoId": "0",
+        "remainingQuantity": 0,
+        "averageTradedPrice": 583.4,
+        "filledQty": 1
+    },
+    {
+        "dhanClientId": "1101121515",
+        "orderId": "4125010313874",
+        "exchangeOrderId": "1000000012317376",
+        "correlationId": "TV_OrderWindow",
+        "orderStatus": "PENDING",
+        "transactionType": "SELL",
+        "exchangeSegment": "NSE_EQ",
+        "productType": "CO",
+        "orderType": "STOP_LOSS_MARKET",
+        "validity": "DAY",
+        "tradingSymbol": "AUBANK",
+        "securityId": "21238",
+        "quantity": 1,
+        "disclosedQuantity": 0,
+        "price": 0.0,
+        "triggerPrice": 580.0,
+        "afterMarketOrder": false,
+        "boProfitValue": 0.0,
+        "boStopLossValue": 0.0,
+        "legName": "STOP_LOSS_LEG",
+        "createTime": "2025-01-03 10:11:09",
+        "updateTime": "2025-01-03 10:11:09",
+        "exchangeTime": "2025-01-03 10:11:09",
+        "drvExpiryDate": "0001-01-01",
+        "drvOptionType": "NA",
+        "drvStrikePrice": 0.0,
+        "omsErrorCode": "0",
+        "omsErrorDescription": "CONFIRMED",
+        "algoId": "0",
+        "remainingQuantity": 1,
+        "averageTradedPrice": 0.0,
+        "filledQty": 0
+    }
+	
+// Modify Stop Loss Leg	
+    {
+          "dhanClientId": "1101121515",
+          "orderId":"4125010313874",
+          "orderType":"STOP_LOSS_MARKET",
+          "legName":"STOP_LOSS_LEG",
+          "quantity":"1",
+          "triggerPrice":"578.5",
+          "validity":"DAY"
+      }
+	  
+// trade detail of open order (with pending SL order)	   
+	  
+[
+    {
+        "dhanClientId": "1101121515",
+        "orderId": "4125010313874",
+        "exchangeOrderId": "1000000012317254",
+        "exchangeTradeId": "1664473",
+        "transactionType": "BUY",
+        "exchangeSegment": "NSE_EQ",
+        "productType": "CO",
+        "orderType": "LIMIT",
+        "tradingSymbol": "AUBANK",
+        "customSymbol": null,
+        "securityId": "21238",
+        "tradedQuantity": 1,
+        "tradedPrice": 583.4,
+        "createTime": "2025-01-03 10:11:09",
+        "updateTime": "2025-01-03 10:11:09",
+        "exchangeTime": "2025-01-03 10:11:09",
+        "drvExpiryDate": "0001-01-01",
+        "drvOptionType": "NA",
+        "drvStrikePrice": 0.0
+    }
+]	  
+
+// trade detail of closed order (after SL order executed)
+
+[
+    {
+        "dhanClientId": "1101121515",
+        "orderId": "4125010313874",
+        "exchangeOrderId": "1000000012317254",
+        "exchangeTradeId": "1664473",
+        "transactionType": "BUY",
+        "exchangeSegment": "NSE_EQ",
+        "productType": "CO",
+        "orderType": "LIMIT",
+        "tradingSymbol": "AUBANK",
+        "customSymbol": null,
+        "securityId": "21238",
+        "tradedQuantity": 1,
+        "tradedPrice": 583.4,
+        "createTime": "2025-01-03 10:11:09",
+        "updateTime": "2025-01-03 10:11:09",
+        "exchangeTime": "2025-01-03 10:11:09",
+        "drvExpiryDate": "0001-01-01",
+        "drvOptionType": "NA",
+        "drvStrikePrice": 0.0
+    },
+    {
+        "dhanClientId": "1101121515",
+        "orderId": "4125010313874",
+        "exchangeOrderId": "1000000012317376",
+        "exchangeTradeId": "2122586",
+        "transactionType": "SELL",
+        "exchangeSegment": "NSE_EQ",
+        "productType": "CO",
+        "orderType": "MARKET",
+        "tradingSymbol": "AUBANK",
+        "customSymbol": null,
+        "securityId": "21238",
+        "tradedQuantity": 1,
+        "tradedPrice": 582.0,
+        "createTime": "2025-01-03 10:35:03",
+        "updateTime": "2025-01-03 10:35:03",
+        "exchangeTime": "2025-01-03 10:35:03",
+        "drvExpiryDate": "0001-01-01",
+        "drvOptionType": "NA",
+        "drvStrikePrice": 0.0
+    }
+]
+
+
+// Place cover order
+
+    {
+        "dhanClientId": "1101121515",
+        "transactionType":"BUY",
+        "exchangeSegment":"NSE_EQ",
+        "productType":"CO",
+        "orderType":"STOP_LOSS",
+        "validity":"DAY",
+        "securityId":"17971",
+        "quantity":"1",
+        "price":"713.1",
+        "triggerPrice":"711" //should be less than CMP
+    }
+	
+//TRade detail of cover order	
+
+[
+    {
+        "dhanClientId": "1101121515",
+        "orderId": "5125010331844",
+        "exchangeOrderId": "1300000034720452",
+        "exchangeTradeId": "605495118",
+        "transactionType": "BUY",
+        "exchangeSegment": "NSE_EQ",
+        "productType": "CO",
+        "orderType": "LIMIT",
+        "tradingSymbol": "SBICARD",
+        "customSymbol": null,
+        "securityId": "17971",
+        "tradedQuantity": 1,
+        "tradedPrice": 713.05,
+        "createTime": "2025-01-03 12:38:06",
+        "updateTime": "2025-01-03 12:38:06",
+        "exchangeTime": "2025-01-03 12:38:06",
+        "drvExpiryDate": "0001-01-01",
+        "drvOptionType": "NA",
+        "drvStrikePrice": 0.0
+    }
+]
+
+// Order detail of cover order (fetched from order list, have some issue with orderdetail api)
+ {
+        "dhanClientId": "1101121515",
+        "orderId": "5125010331844",
+        "exchangeOrderId": "1300000034720452",
+        "correlationId": "1101121515-1735888086147",
+        "orderStatus": "TRADED",
+        "transactionType": "BUY",
+        "exchangeSegment": "NSE_EQ",
+        "productType": "CO",
+        "orderType": "LIMIT",
+        "validity": "DAY",
+        "tradingSymbol": "SBICARD",
+        "securityId": "17971",
+        "quantity": 1,
+        "disclosedQuantity": 0,
+        "price": 713.1,
+        "triggerPrice": 0.0,
+        "afterMarketOrder": false,
+        "boProfitValue": 0.0,
+        "boStopLossValue": 0.0,
+        "legName": "ENTRY_LEG",
+        "createTime": "2025-01-03 12:38:06",
+        "updateTime": "2025-01-03 12:38:06",
+        "exchangeTime": "2025-01-03 12:38:06",
+        "drvExpiryDate": "0001-01-01",
+        "drvOptionType": "NA",
+        "drvStrikePrice": 0.0,
+        "omsErrorCode": "0",
+        "omsErrorDescription": "TRADE CONFIRMED",
+        "algoId": "0",
+        "remainingQuantity": 0,
+        "averageTradedPrice": 713.05,
+        "filledQty": 1
+    },
+    {
+        "dhanClientId": "1101121515",
+        "orderId": "	",
+        "exchangeOrderId": "1300000034720478",
+        "correlationId": "1101121515-1735888086147",
+        "orderStatus": "PENDING",
+        "transactionType": "SELL",
+        "exchangeSegment": "NSE_EQ",
+        "productType": "CO",
+        "orderType": "STOP_LOSS_MARKET",
+        "validity": "DAY",
+        "tradingSymbol": "SBICARD",
+        "securityId": "17971",
+        "quantity": 1,
+        "disclosedQuantity": 0,
+        "price": 0.0,
+        "triggerPrice": 711.0,
+        "afterMarketOrder": false,
+        "boProfitValue": 0.0,
+        "boStopLossValue": 0.0,
+        "legName": "STOP_LOSS_LEG",
+        "createTime": "2025-01-03 12:38:06",
+        "updateTime": "2025-01-03 12:38:06",
+        "exchangeTime": "2025-01-03 12:38:06",
+        "drvExpiryDate": "0001-01-01",
+        "drvOptionType": "NA",
+        "drvStrikePrice": 0.0,
+        "omsErrorCode": "0",
+        "omsErrorDescription": "CONFIRMED",
+        "algoId": "0",
+        "remainingQuantity": 1,
+        "averageTradedPrice": 0.0,
+        "filledQty": 0
+    },
+
+// Bracket Order
+
+    {
+        "dhanClientId": "1101121515",
+        "transactionType":"BUY",
+        "exchangeSegment":"NSE_EQ",
+        "productType":"BO",
+        "orderType":"STOP_LOSS",
+        "validity":"DAY",
+        "securityId":"15355",
+        "quantity":"1",
+        "price":"540.1",
+        "triggerPrice":"534",
+        "boProfitValue":"5",
+        "boStopLossValue": "2"
+    }
