@@ -1,11 +1,11 @@
 import { Module, OnModuleInit } from '@nestjs/common';
-import { AppService } from './app.service';
-import { AppGateway } from './app.gateway';
 import { SignalController } from './signal.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeOrmConfigService } from './config/typeorm-config.service';
 import { ConfigModule } from '@nestjs/config';
 import { AlertService } from './alert.service';
+import { AlertController } from './alert.controller';
+import { AlertGateway } from './alert.gateway';
 
 @Module({
   imports: [ ConfigModule.forRoot({
@@ -14,13 +14,13 @@ import { AlertService } from './alert.service';
   }), TypeOrmModule.forRootAsync({
     useClass: TypeOrmConfigService,
   }),TypeOrmModule.forFeature([]),],
-  controllers: [SignalController],
-  providers: [AppService,AppGateway,AlertService],
+  controllers: [SignalController,AlertController],
+  providers: [AlertGateway,AlertService],
 })
 export class AppModule implements OnModuleInit {
-  constructor(private readonly service: AppService) {}
+  constructor() {}
 
   onModuleInit() {
-    this.service.startPublishing();
+    
   }
 }

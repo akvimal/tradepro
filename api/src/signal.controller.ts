@@ -1,12 +1,12 @@
 import { Body, Controller, Get, Inject, LoggerService, Param, Post, Res, UseGuards} from '@nestjs/common';
-import { AppGateway } from './app.gateway';
+import { AlertGateway } from './alert.gateway';
 import { AlertService } from './alert.service';
 
 
 @Controller('signal')
 export class SignalController {
 
-  constructor(private gateway:AppGateway, private service:AlertService) {}
+  constructor(private gateway:AlertGateway, private service:AlertService) {}
 
   @Post('/:provider/:alertid/:direction')
   async alertListener(@Param('provider') provider: string, 
@@ -15,17 +15,25 @@ export class SignalController {
       @Body() payload: any, @Res() res: any) {
     //log the incoming data
     //save incoming alert to db
-        console.log(payload);
-        
-        this.service.save(alertid, direction, this.getTimestampWithTime(payload.triggered_at),
+   try {
+    await this.service.save(alertid, direction, this.getTimestampWithTime(payload.triggered_at),
         payload.stocks);
 
-    // this.gateway.publishData(payload)
+    this.gateway.publishData({alertid,payload})
+   } catch (error) {
+    console.log(error);
+    
+   }
+    
     
     res.status(200).send({status:'received'});
   }
   
   getTimestampWithTime(inputTime) {
+    console.log(inputTime);
+    if(inputTime.length > 5) {
+      return inputTime;
+    }
     const currentDate = new Date();
     
     // Parse time string

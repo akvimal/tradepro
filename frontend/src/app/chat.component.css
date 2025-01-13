@@ -1,0 +1,15 @@
+table, th, td {
+    border: 1px solid black;
+    padding: .3em;
+  }
+
+.symbols{
+    margin: 0;
+    padding: 0;
+}
+.symbols li{
+    margin: 0;
+    list-style: none;
+    float: left;
+    padding-right: .2em;
+}
