@@ -1,21 +1,5 @@
 services:
 
-  api:
-    build:
-      dockerfile: Dockerfile
-      context: ./api
-    environment:
-      PORT: 3000
-      DB_NAME: tradeprodb
-      DB_HOST: host.docker.internal
-      DB_PORT: 5432
-      DB_USER: postgres
-      DB_PASSWORD: postgres 
-    ports:
-      - 3001:3000
-    networks:
-      - local
-
   frontend:
     build:
       dockerfile: Dockerfile

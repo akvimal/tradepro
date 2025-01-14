@@ -5,10 +5,10 @@ import { AlertService } from './secured/alerts/alerts.service';
 
 @Component({
   imports: [CommonModule],
-  templateUrl: './chat.component.html',
-  styleUrl: './chat.component.css'
+  templateUrl: './signal.component.html',
+  styleUrl: './signal.component.css'
 })
-export class ChatComponent implements OnInit {
+export class SignalComponent implements OnInit {
   
   message: any = {};
   alerts:any;
