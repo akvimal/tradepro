@@ -2,7 +2,6 @@ import { Body, Controller, Get, Inject, LoggerService, Param, Post, Res, UseGuar
 import { AlertGateway } from './alert.gateway';
 import { AlertService } from './alert.service';
 
-
 @Controller('signal')
 export class SignalController {
 
@@ -19,13 +18,10 @@ export class SignalController {
     await this.service.save(alertid, direction, this.getTimestampWithTime(payload.triggered_at),
         payload.stocks);
 
-    this.gateway.publishData({alertid,payload})
-   } catch (error) {
-    console.log(error);
-    
-   }
-    
-    
+      this.gateway.publishData({alertid,payload})
+    } catch (error) {
+      console.log(error);
+    }
     res.status(200).send({status:'received'});
   }
   
