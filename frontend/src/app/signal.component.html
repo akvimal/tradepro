@@ -6,17 +6,17 @@
 <button (click)="sendMessage(messageInput)">Send</button> -->
 
 <!-- <div *ngFor="let msg of messages"> -->
-  <table width="1200px" id="signals">
+  <table width="900px" id="signals">
     <tr>
-      <th width="80px">Time</th>
-      <th></th>
-      <th width="510px">Bullish</th>
+      <th width="100px">Time</th>
+      <th width="40px"></th>
+      <th width="430px">Bullish</th>
       <th width="50px">Count</th>
-      <th width="510px">Bearish</th>
+      <th width="430px">Bearish</th>
       <th width="50px">Count</th>
     </tr>
     <tr *ngFor="let a of alerts">
-      <td style="text-align: center;">{{a.triggered|date:'hh:mm'}}</td>
+      <td style="text-align: center;">{{a.triggered|date:'hh:mm a'}}</td>
       <td [ngStyle]="{background: getColor(a.diff), color: a.diff > 10 || a.diff < -10  ? 'white' : 'inherit', textAlign: 'center'}">{{getAbs(a.diff)}}</td>
       <td><ul class="symbols"><li class="bull" *ngFor="let bl of a.bullish">{{bl}}</li></ul></td>
       <td style="text-align: center;">{{a.total_bullish}}</td>
