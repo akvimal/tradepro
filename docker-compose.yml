@@ -1,8 +1,33 @@
 services:
 
+  api:
+    build:
+      dockerfile: Dockerfile
+      context: ./api
+    environment:
+      PORT: 3000
+      DB_NAME: postgres
+      DB_HOST: host.docker.internal
+      DB_PORT: 36000
+      DB_USER: postgres
+      DB_PASSWORD: trade@123 
+    ports:
+      - 3001:3000
+    networks:
+      - local
+
   frontend:
     build:
       dockerfile: Dockerfile
       context: ./frontend
     ports:
       - 8000:80
+    networks:
+      - local
+      
+networks:
+  local:
+
+volumes:
+    pgvol:
+        external: true

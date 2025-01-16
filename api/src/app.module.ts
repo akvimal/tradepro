@@ -6,6 +6,8 @@ import { ConfigModule } from '@nestjs/config';
 import { AlertService } from './alert.service';
 import { AlertController } from './alert.controller';
 import { AlertGateway } from './alert.gateway';
+import { FeedController } from './feed.controller';
+import { FeedService } from './feed.service';
 
 @Module({
   imports: [ ConfigModule.forRoot({
@@ -14,8 +16,8 @@ import { AlertGateway } from './alert.gateway';
   }), TypeOrmModule.forRootAsync({
     useClass: TypeOrmConfigService,
   }),TypeOrmModule.forFeature([]),],
-  controllers: [SignalController,AlertController],
-  providers: [AlertGateway,AlertService],
+  controllers: [SignalController,AlertController,FeedController],
+  providers: [AlertGateway,AlertService,FeedService],
 })
 export class AppModule implements OnModuleInit {
   constructor() {}

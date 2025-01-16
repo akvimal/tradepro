@@ -1,23 +1,28 @@
 <!-- <app-button-demo></app-button-demo> -->
-<a href="">Live</a> <a href="">History</a>
+
+<input type="date" [(ngModel)]="date" (change)="refresh()">
+<button (click)="today()">Today</button>
 <!-- <input #messageInput type="text" placeholder="Enter message" />
 <button (click)="sendMessage(messageInput)">Send</button> -->
 
 <!-- <div *ngFor="let msg of messages"> -->
   <table width="1200px" id="signals">
     <tr>
-      <th width="160px">Time</th>
-      <th width="470px">Bullish</th>
+      <th width="80px">Time</th>
+      <th></th>
+      <th width="510px">Bullish</th>
       <th width="50px">Count</th>
-      <th width="470px">Bearish</th>
+      <th width="510px">Bearish</th>
       <th width="50px">Count</th>
     </tr>
     <tr *ngFor="let a of alerts">
-      <td>{{a.triggered}}</td>
+      <td style="text-align: center;">{{a.triggered|date:'hh:mm'}}</td>
+      <td [ngStyle]="{background: getColor(a.diff), color: a.diff > 10 || a.diff < -10  ? 'white' : 'inherit', textAlign: 'center'}">{{getAbs(a.diff)}}</td>
       <td><ul class="symbols"><li class="bull" *ngFor="let bl of a.bullish">{{bl}}</li></ul></td>
       <td style="text-align: center;">{{a.total_bullish}}</td>
       <td><ul class="symbols"><li class="bear" *ngFor="let br of a.bearish">{{br}}</li></ul></td>
       <td style="text-align: center;">{{a.total_bearish}}</td>
+      
     </tr>
   </table>
   <!-- <audio src="https://voiceage.com/wbsamples/in_mono/Chorus.wav" #myaudio></audio> -->
