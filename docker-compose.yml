@@ -43,3 +43,7 @@ services:
       
 networks:
   local:
+
+volumes:
+    tradeprodata:
+        external: true
