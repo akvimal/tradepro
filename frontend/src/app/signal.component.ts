@@ -59,6 +59,7 @@ export class SignalComponent implements OnInit {
     this.alertService.findAllById({criteria:{id,date:this.date}}).subscribe((data:any) => {
       
       this.alerts = data.map((d:any) => {
+        d['triggered'] = d['triggered'].endsWith('Z') ? d['triggered'].substring(0,d['triggered'].length-1) : d['triggered'];
         d['bullish'] = d['bullish'].split(',');
         d['bearish'] = d['bearish'].split(',');
         d['diff'] = d['total_bullish'] - d['total_bearish'];

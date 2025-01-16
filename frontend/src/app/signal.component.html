@@ -16,7 +16,7 @@
       <th width="50px">Count</th>
     </tr>
     <tr *ngFor="let a of alerts">
-      <td style="text-align: center;">{{a.triggered|date:'hh:mm a'}}</td>
+      <td style="text-align: center;">{{a.triggered|date:'HH:mm'}}</td>
       <td [ngStyle]="{background: getColor(a.diff), color: a.diff > 10 || a.diff < -10  ? 'white' : 'inherit', textAlign: 'center'}">{{getAbs(a.diff)}}</td>
       <td><ul class="symbols"><li class="bull" *ngFor="let bl of a.bullish">{{bl}}</li></ul></td>
       <td style="text-align: center;">{{a.total_bullish}}</td>
