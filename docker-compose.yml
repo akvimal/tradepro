@@ -1,14 +1,30 @@
 services:
 
+  postgres:
+    image: postgres:14.5
+    restart: always
+    container_name: tradepro-db
+    volumes:
+      - tradeprodata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: trade@123
+      POSTGRES_DB: postgres
+    ports:
+      - 36000:5432
+    networks:  
+      - local
+
   api:
     build:
       dockerfile: Dockerfile
       context: ./api
     environment:
+      NODE_ENV: production
       PORT: 3000
       DB_NAME: postgres
       DB_HOST: host.docker.internal
-      DB_PORT: 36000
+      DB_PORT: 5432
       DB_USER: postgres
       DB_PASSWORD: trade@123 
     ports:
@@ -27,7 +43,3 @@ services:
       
 networks:
   local:
-
-volumes:
-    pgvol:
-        external: true
