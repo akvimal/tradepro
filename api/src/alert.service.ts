@@ -42,7 +42,7 @@ export class AlertService {
 
     async save( alertid: string, direction: string, triggered:string, symbols:string) {  
       
-        const time_format = 'yyyy-mm-dd HH:MI';
+        const time_format = 'yyyy-mm-dd HH:MI am';
         const time = moment().format('YYYY-MM-DD') + ' ' +triggered;
         
         // const time_format = 'dd-mm-yyyy HH:MI am';
@@ -60,6 +60,8 @@ export class AlertService {
                 if(direction == 'Bearish')
                     query = `insert into signals (alert_id,triggered,bearish) 
                     values (${alertid},to_timestamp('${time}', '${time_format}'),'${symbols}')`;
+                console.log(query);
+                
                 const inserted = await this.manager.query(query);
             }
             else {
@@ -71,6 +73,7 @@ export class AlertService {
                     // if(existing.rows[0].bearish)
                     query = `update signals set bearish = '${(existing[0].bearish ? existing[0].bearish+',':'')+symbols}' where alert_id = ${alertid} and triggered = to_timestamp('${time}', '${time_format}')`;
                 }
+                console.log(query);
                 const updated = await this.manager.query(query);
             }
             // console.log(existing.rows);
