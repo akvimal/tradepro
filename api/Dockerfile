@@ -16,8 +16,9 @@ RUN npm install --force
 # Bundle app source
 COPY . .
 
+
 # Copy the .env and .env.development files
-COPY .env .env.development ./
+#COPY .env .env.development ./
 
 # Creates a "dist" folder with the production build
 RUN npm run build

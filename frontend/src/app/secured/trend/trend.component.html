@@ -1,26 +1,28 @@
 <!-- <app-button-demo></app-button-demo> -->
 
-<input type="date" [(ngModel)]="date" (change)="refresh()">
-<button (click)="today()">Today</button>
+
 <!-- <input #messageInput type="text" placeholder="Enter message" />
 <button (click)="sendMessage(messageInput)">Send</button> -->
 
 <!-- <div *ngFor="let msg of messages"> -->
-  <table width="900px" id="signals">
+  <table width="100%" id="signals">
     <tr>
-      <th width="100px">Time</th>
-      <th width="40px"></th>
-      <th width="430px">Bullish</th>
-      <th width="50px">Count</th>
-      <th width="430px">Bearish</th>
-      <th width="50px">Count</th>
+      <th width="5%">Time</th>
+      <th width="5%"></th>
+      <th width="40%">Bullish</th>
+      <th width="5%">Count</th>
+      <th width="40%">Bearish</th>
+      <th width="5%">Count</th>
     </tr>
     <tr *ngFor="let a of alerts">
       <td style="text-align: center;">{{a.triggered|date:'HH:mm'}}</td>
       <td [ngStyle]="{background: getColor(a.diff), color: a.diff > 10 || a.diff < -10  ? 'white' : 'inherit', textAlign: 'center'}">{{getAbs(a.diff)}}</td>
-      <td><ul class="symbols"><li class="bull" *ngFor="let bl of a.bullish">{{bl}}</li></ul></td>
+      <td><ul class="symbols"><li class="bull" *ngFor="let bl of a.bullish" 
+          [ngStyle]="{fontWeight:bl.level==0?'bold':'inherit',color:bl.level==0?'blue':'inherit'}">{{bl.symbol}}</li>
+        </ul></td>
       <td style="text-align: center;">{{a.total_bullish}}</td>
-      <td><ul class="symbols"><li class="bear" *ngFor="let br of a.bearish">{{br}}</li></ul></td>
+      <td><ul class="symbols"><li class="bear" *ngFor="let br of a.bearish"
+        [ngStyle]="{fontWeight:br.level==0?'bold':'inherit',color:br.level==0?'blue':'inherit'}">{{br.symbol}}</li></ul></td>
       <td style="text-align: center;">{{a.total_bearish}}</td>
       
     </tr>

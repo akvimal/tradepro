@@ -6,25 +6,17 @@ export class FeedController {
 
   constructor(private service:FeedService) {}
 
-  @Get()
-  async read() {
-    console.log('sending data..');
+  @Post('/request')
+  async feedRequest(@Body() payload:any){
+    console.log('request received',payload);
     
-   await this.service.send(`
-    {
-    "RequestCode" : 15,
-    "InstrumentCount" : 2,
-    "InstrumentList" : [
-        {
-            "ExchangeSegment" : "NSE_EQ",
-            "SecurityId" : "1333"
-        },
-        {
-            "ExchangeSegment" : "BSE_EQ",
-            "SecurityId" : "532540"
-        }
-    ]
-}`)
+    const req = {RequestCode : payload['control']};
+    if(payload['securities']){
+      req['InstrumentCount'] = payload['securities'].length;
+      req['InstrumentList'] = payload['securities'].map(sec => {return {ExchangeSegment:sec['exchange'],SecurityId:sec['security_id']}})
+    }
+    await this.service.send(req);
+    return {status: 'Success'}
   }
 
 }

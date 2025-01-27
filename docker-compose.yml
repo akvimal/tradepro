@@ -1,11 +1,18 @@
 services:
 
+  rabbitmq:
+    image: rabbitmq:3
+    ports:
+      - '5672:5672'
+    networks:
+      - local
+
   postgres:
     image: postgres:14.5
     restart: always
     container_name: tradepro-db
     volumes:
-      - tradeprodata:/var/lib/postgresql/data
+      - tradedb-vol:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: trade@123
@@ -23,10 +30,14 @@ services:
       NODE_ENV: production
       PORT: 3000
       DB_NAME: postgres
-      DB_HOST: host.docker.internal
+      #DB_HOST: host.docker.internal
+      DB_HOST: tradepro-db
       DB_PORT: 5432
       DB_USER: postgres
       DB_PASSWORD: trade@123 
+    depends_on:
+      - postgres
+      - rabbitmq
     ports:
       - 3001:3000
     networks:
@@ -45,5 +56,5 @@ networks:
   local:
 
 volumes:
-    tradeprodata:
+    tradedb-vol:
         external: true

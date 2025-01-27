@@ -6,26 +6,31 @@ const signals = []
 
 async function load(){
     setTimeout(() => {
-        loadFile('data/Backtest 1min breakout bearish, Technical Analysis Scanner.csv','bearish')    
+        loadFile('data/Backtest Daily Futures BOS - Bearish.csv','bearish')    
         console.log('done bearish');
         
-    }, 500);
+    }, 2000);
     setTimeout(() => {
-        loadFile('data/Backtest 1min breakout bullish, Technical Analysis Scanner.csv','bullish')
+        loadFile('data/Backtest Daily Futures BOS - Bullish.csv','bullish')
         console.log('done bullish');
-    }, 1000);
+    }, 100);
     setTimeout(() => {
         // console.log(signals);
         i = 0;
         setInterval(async () => {
             if(signals[i].bullish)
-                await axios.post('http://localhost:3000/signal/chartink/1/Bullish', {stocks:signals[i].bullish,triggered_at:signals[i].date})
+                await axios.post('http://localhost:3001/signal/chartink/1/Bullish', {stocks:signals[i].bullish,triggered_at:signals[i].date})
             if(signals[i].bearish)
-                await axios.post('http://localhost:3000/signal/chartink/1/Bearish', {stocks:signals[i].bearish,triggered_at:signals[i].date})
+                await axios.post('http://localhost:3001/signal/chartink/1/Bearish', {stocks:signals[i].bearish,triggered_at:signals[i].date})
             console.log(i);
             i++;
-        }, 5000);
-    },1500);
+        }, 1000);
+        // for (let index = 0; index < 5; index++) {
+        //     console.log(signals[index]);
+            
+        // }
+        
+    },5000);
     
     
     

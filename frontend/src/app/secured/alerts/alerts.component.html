@@ -1,0 +1,17 @@
+
+<div class="row">
+    <div class="col-12">
+        <input type="date" [(ngModel)]="date">
+        <button (click)="today()">Today</button>
+    </div>
+    </div>
+    <div class="row mt-2">
+    <div class="col-8">
+        <h6>Trend</h6>
+        <app-alert-trend [alertid]="1" [date]="date"></app-alert-trend>
+    </div>
+    <div class="col-4">
+        <h6>Orders</h6>
+        <app-alert-orders [alertid]="1" [date]="date"></app-alert-orders>
+    </div>
+</div>
