@@ -20,7 +20,7 @@ export class WebSocketService {
   receiveMessages(): Observable<any> {
     return new Observable((subscriber) => {
       this.socket.on('message', (data) => {
-        // console.log('received message',data);
+        console.log('received message',data);
         subscriber.next(data);
       });
     });

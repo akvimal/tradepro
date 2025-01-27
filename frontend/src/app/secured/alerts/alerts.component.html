@@ -1,3 +1,5 @@
+<div *ngIf="alert">
+<h4>{{alert.title}}</h4>
 
 <div class="row">
     <div class="col-12">
@@ -8,10 +10,11 @@
     <div class="row mt-2">
     <div class="col-8">
         <h6>Trend</h6>
-        <app-alert-trend [alertid]="1" [date]="date"></app-alert-trend>
+        <app-alert-trend [alertid]="id" [date]="date"></app-alert-trend>
     </div>
     <div class="col-4">
         <h6>Orders</h6>
-        <app-alert-orders [alertid]="1" [date]="date"></app-alert-orders>
+        <app-alert-orders [alertid]="id" [date]="date" [buy]="alert.buy" [sell]="alert.sell"></app-alert-orders>
     </div>
+</div>
 </div>

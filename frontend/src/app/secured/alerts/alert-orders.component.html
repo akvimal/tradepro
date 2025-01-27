@@ -2,6 +2,7 @@
 <div class="row">
     <div class="col-12">
         <h6>Bullish</h6>
+        <button (click)="toggleTrend('BUY')">Turn {{buy ? 'OFF' : 'ON'}}</button>
         <table width="100%">
             <tr>
                 <th>Security</th>
@@ -20,6 +21,7 @@
     </div>
     <div class="col-12 mt-2">
         <h6>Bearish</h6>
+        <button (click)="toggleTrend('SELL')">Turn {{sell ? 'OFF' : 'ON'}}</button>
         <table width="100%">
             <tr>
                 <th>Security</th>

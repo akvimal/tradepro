@@ -1,74 +1,4 @@
 date,symbol,marketcapname,sector
-16-01-2025 1:00 pm,BSE,Largecap,Financial Services
-16-01-2025 1:00 pm,AUBANK,Largecap,Bank
-16-01-2025 1:15 pm,CONCOR,Largecap,Services
-16-01-2025 1:15 pm,CUB,Midcap,Bank
-16-01-2025 1:30 pm,CONCOR,Largecap,Services
-16-01-2025 1:45 pm,AUBANK,Largecap,Bank
-16-01-2025 1:45 pm,BIOCON,Largecap,Pharmaceuticals
-16-01-2025 2:00 pm,CONCOR,Largecap,Services
-16-01-2025 2:15 pm,SONACOMS,Largecap,Auto
-16-01-2025 3:15 pm,SBICARD,Largecap,Finance
-17-01-2025 9:15 am,CHAMBLFERT,Midcap,Industrials
-17-01-2025 9:15 am,VEDL,Largecap,Industrials
-17-01-2025 9:15 am,RELIANCE,Largecap,Industrials
-17-01-2025 9:15 am,HINDALCO,Largecap,Metals
-17-01-2025 9:15 am,LT,Largecap,Realty
-17-01-2025 9:15 am,BERGEPAINT,Largecap,Industrials
-17-01-2025 9:15 am,HINDCOPPER,Largecap,Metals
-17-01-2025 9:15 am,ICICIGI,Largecap,Services
-17-01-2025 9:15 am,HAL,Largecap,Aerospace & Defence
-17-01-2025 9:15 am,MANAPPURAM,Midcap,Finance
-17-01-2025 9:15 am,NATIONALUM,Largecap,Metals
-17-01-2025 9:15 am,SJVN,Largecap,Miscellaneous
-17-01-2025 9:15 am,COALINDIA,Largecap,Industrials
-17-01-2025 9:15 am,APLAPOLLO,Largecap,Metals
-17-01-2025 9:15 am,GUJGASLTD,Largecap,Industrials
-17-01-2025 9:15 am,LTTS,Largecap,I.T
-17-01-2025 9:30 am,CHAMBLFERT,Midcap,Industrials
-17-01-2025 9:30 am,DABUR,Largecap,FMCG
-17-01-2025 9:30 am,BERGEPAINT,Largecap,Industrials
-17-01-2025 9:30 am,NMDC,Largecap,Industrials
-17-01-2025 9:30 am,ICICIGI,Largecap,Services
-17-01-2025 9:30 am,MANAPPURAM,Midcap,Finance
-17-01-2025 9:30 am,GUJGASLTD,Largecap,Industrials
-17-01-2025 9:45 am,BEL,Largecap,Aerospace & Defence
-17-01-2025 9:45 am,CHAMBLFERT,Midcap,Industrials
-17-01-2025 9:45 am,HINDALCO,Largecap,Metals
-17-01-2025 9:45 am,HUDCO,Largecap,Finance
-17-01-2025 9:45 am,ICICIGI,Largecap,Services
-17-01-2025 9:45 am,HAL,Largecap,Aerospace & Defence
-17-01-2025 9:45 am,POLYCAB,Largecap,Industrials
-17-01-2025 9:45 am,NHPC,Largecap,Miscellaneous
-17-01-2025 9:45 am,SJVN,Largecap,Miscellaneous
-17-01-2025 9:45 am,APLAPOLLO,Largecap,Metals
-17-01-2025 9:45 am,GUJGASLTD,Largecap,Industrials
-17-01-2025 10:00 am,BEL,Largecap,Aerospace & Defence
-17-01-2025 10:00 am,AARTIIND,Midcap,Industrials
-17-01-2025 10:00 am,HUDCO,Largecap,Finance
-17-01-2025 10:00 am,HAL,Largecap,Aerospace & Defence
-17-01-2025 10:00 am,MANAPPURAM,Midcap,Finance
-17-01-2025 10:00 am,NHPC,Largecap,Miscellaneous
-17-01-2025 10:00 am,SJVN,Largecap,Miscellaneous
-17-01-2025 10:00 am,IRFC,Largecap,Finance
-17-01-2025 10:00 am,LTTS,Largecap,I.T
-17-01-2025 10:15 am,DABUR,Largecap,FMCG
-17-01-2025 10:15 am,HINDCOPPER,Largecap,Metals
-17-01-2025 10:15 am,HUDCO,Largecap,Finance
-17-01-2025 10:15 am,MANAPPURAM,Midcap,Finance
-17-01-2025 10:15 am,NHPC,Largecap,Miscellaneous
-17-01-2025 10:15 am,IRFC,Largecap,Finance
-17-01-2025 10:15 am,LTTS,Largecap,I.T
-17-01-2025 10:30 am,LTTS,Largecap,I.T
-17-01-2025 11:00 am,DABUR,Largecap,FMCG
-17-01-2025 11:00 am,LTF,Largecap,Finance
-17-01-2025 11:15 am,ESCORTS,Largecap,Auto
-17-01-2025 11:45 am,MANAPPURAM,Midcap,Finance
-17-01-2025 12:00 pm,MANAPPURAM,Midcap,Finance
-17-01-2025 12:00 pm,POLYCAB,Largecap,Industrials
-17-01-2025 12:15 pm,HINDCOPPER,Largecap,Metals
-17-01-2025 12:15 pm,HAL,Largecap,Aerospace & Defence
-17-01-2025 12:45 pm,HAL,Largecap,Aerospace & Defence
 17-01-2025 1:15 pm,HINDCOPPER,Largecap,Metals
 17-01-2025 1:45 pm,HUDCO,Largecap,Finance
 17-01-2025 2:00 pm,HINDCOPPER,Largecap,Metals
@@ -474,3 +404,9 @@ date,symbol,marketcapname,sector
 24-01-2025 1:15 pm,BRITANNIA,Largecap,FMCG
 24-01-2025 2:45 pm,LAURUSLABS,Largecap,Pharmaceuticals
 24-01-2025 3:15 pm,LAURUSLABS,Largecap,Pharmaceuticals
+27-01-2025 9:15 am,TORNTPHARM,Largecap,Pharmaceuticals
+27-01-2025 9:15 am,HINDUNILVR,Largecap,FMCG
+27-01-2025 9:15 am,BRITANNIA,Largecap,FMCG
+27-01-2025 9:15 am,BANKINDIA,Largecap,Bank
+27-01-2025 9:45 am,TORNTPHARM,Largecap,Pharmaceuticals
+27-01-2025 1:45 pm,BANKINDIA,Largecap,Bank

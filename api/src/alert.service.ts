@@ -8,8 +8,18 @@ export class AlertService {
 
     constructor (@InjectEntityManager() private manager: EntityManager) {}
 
-    async findOne(id:string){
+    async findAll(){
+        return await this.manager.query(`select * from alerts where active = true`);
+    }
+
+    async findOne(id:number){
         const alert = await this.manager.query(`select * from alerts where id = ${id}`);
+        return alert;
+    }
+
+    async updateTrendFlag(alertid:number,trend:string,on:boolean){
+        let sql = `update alerts set ${trend == 'BUY' ? 'buy' : 'sell'} = ${on} where id = ${alertid}`
+        const alert = await this.manager.query(sql);
         return alert;
     }
 

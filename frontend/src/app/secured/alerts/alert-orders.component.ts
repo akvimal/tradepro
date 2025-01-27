@@ -4,6 +4,7 @@ import { CommonModule } from "@angular/common";
 import { WebSocketService } from "../../websocket.service";
 import { Subscription } from "rxjs";
 import { MarketFeedService } from "../market-feed.service";
+import { AlertService } from "./alerts.service";
 
 @Component({
     imports: [CommonModule],
@@ -15,12 +16,16 @@ export class AlertOrdersComponent {
 
     @Input() alertid:number = 0;
     @Input() date:string = '';
-    counter = 0;
+    
+    @Input() buy = true;
+    @Input() sell = true;
     
     private subscription: Subscription;
     orders:any = [];
 
-    constructor(private wsService: WebSocketService, private service:OrderService, private feedService:MarketFeedService){
+    constructor(private wsService: WebSocketService, private service:OrderService, 
+        private alertService:AlertService,
+        private feedService:MarketFeedService){
         this.wsService.receiveMessages().subscribe((message) => {
             // this.message = message;
             const {type,security,ltp} = message;
@@ -68,4 +73,20 @@ export class AlertOrdersComponent {
         }); 
     }
 
+    toggleTrend(direction:string){
+        if(direction == 'BUY'){
+            this.buy = !this.buy;
+            this.alertService.updateTrendFlag(this.alertid,direction,this.buy).subscribe(data => {
+                console.log(data);
+                
+            });
+        }
+        if(direction == 'SELL'){
+            this.sell = !this.sell;
+            this.alertService.updateTrendFlag(this.alertid,direction,this.sell).subscribe(data => {
+                console.log(data);
+                
+            });
+        }
+    }
 }

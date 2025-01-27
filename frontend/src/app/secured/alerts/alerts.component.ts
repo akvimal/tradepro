@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TrendComponent } from '../trend/trend.component';
 import { AlertOrdersComponent } from './alert-orders.component';
+import { AlertService } from './alerts.service';
 
 @Component({
   imports: [CommonModule,FormsModule,TrendComponent,AlertOrdersComponent],
@@ -12,13 +13,23 @@ import { AlertOrdersComponent } from './alert-orders.component';
 })
 export class AlertsComponent {
   
-  date:string = moment().format('YYYY-MM-DD');
+  id = 1;
+  alert:any;
+  date:string = '';
 
-  constructor(){
+  constructor(private service:AlertService){
   }
 
-    today(){
-      this.date = moment().format('YYYY-MM-DD');
-    }
+  ngOnInit(){
+    this.today();
+  
+    this.service.findById(this.id).subscribe(data => {
+      this.alert = data;
+    });  
+  }
+
+  today(){
+    this.date = moment().format('YYYY-MM-DD');
+  }
 
 }
