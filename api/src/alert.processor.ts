@@ -51,7 +51,7 @@ export class AlertProcessor {
                         // for same direction signal and unsold order qty exists for the day, then ignore
                         // for opposite direction signal and unsold order qty exists for the day, then square off (update SL leg to market)
                         if(proceed){
-                            const secInfo = (await this.masterService.findSecurityInfo(symbol))[0];
+                            const secInfo = (await this.masterService.findSecurityInfo('NSE','EQ',symbol))[0];
                             const order = this.buildOrderRequest(alert, account['balance'], direction, symbol, secInfo['security_id'], price);
                             await this.mqService.publishMessage('orderQueue', order).catch(error => console.log(error));  
                         }

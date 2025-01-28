@@ -23,6 +23,7 @@ import { ApiService } from './api.service';
 import { HttpModule } from '@nestjs/axios';
 import { DhanService } from './dhan.service';
 import { WebSocketService } from './common/websocket.service';
+import { AppConfigService } from './common/app-config.service';
 
 @Module({
   imports: [ ConfigModule.forRoot({
@@ -33,7 +34,7 @@ import { WebSocketService } from './common/websocket.service';
   }),TypeOrmModule.forFeature([]),
 HttpModule],
   controllers: [SignalController,TrendController,AlertController,FeedController,OrderController],
-  providers: [RabbitMQService, WebSocketService, ApiService, DhanService, OrderConsumer, MasterService, AlertGateway, AlertConsumer, AlertProcessor, OrderProcessor,
+  providers: [RabbitMQService, AppConfigService, WebSocketService, ApiService, DhanService, OrderConsumer, MasterService, AlertGateway, AlertConsumer, AlertProcessor, OrderProcessor,
     TrendService, AlertService, FeedService, OrderService, AccountService],
 })
 export class AppModule implements OnModuleInit {

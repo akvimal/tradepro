@@ -1,13 +1,15 @@
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+
 import { AlertGateway } from 'src/alert.gateway';
 import * as WebSocket from 'ws';
+import { AppConfigService } from './app-config.service';
 
 @Injectable()
 export class WebSocketService implements OnModuleInit, OnModuleDestroy {
 
   private ws: WebSocket;
 
-  constructor(private gateway:AlertGateway){}
+  constructor(private gateway:AlertGateway, private appConfigService:AppConfigService){}
 
   onModuleInit() {
     this.connectToWebSocket();
@@ -17,12 +19,11 @@ export class WebSocketService implements OnModuleInit, OnModuleDestroy {
     this.ws.close();
   }
 
-  private connectToWebSocket() {
-    const access_token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJkaGFuIiwicGFydG5lcklkIjoiIiwiZXhwIjoxNzM4MzA5ODgxLCJ0b2tlbkNvbnN1bWVyVHlwZSI6IlNFTEYiLCJ3ZWJob29rVXJsIjoiIiwiZGhhbkNsaWVudElkIjoiMTEwMTEyMTUxNSJ9.hYmfdcI7xYcSPFtJ6hh3vd9VGfjRASywIQ34K6R_guDMwsqmY0iKqSHPauYksIByX5m05g3Do2g29OQwN7GJFg';
-    const client_id = '1101121515';
-    const url = `wss://api-feed.dhan.co?version=2`;
+  async connectToWebSocket() {
+    const partner = await this.appConfigService.getPartnerInfo('Dhan');
+    const {access_token,client_id,feed_url} = partner['config'];
+    const endpoint = `${feed_url}&token=${access_token}&clientId=${client_id}&authType=2`;
 
-    const endpoint = `${url}&token=${access_token}&clientId=${client_id}&authType=2`;
     this.ws = new WebSocket(endpoint);
     console.log('connecting to DHAN market feed socket ...');
     
@@ -70,7 +71,7 @@ export class WebSocketService implements OnModuleInit, OnModuleDestroy {
         const lastTradedPrice = data.readFloatLE(8); // 4 bytes (float32)
         const lastTradeTime = data.readInt32LE(12); // 4 bytes (int32)    
 
-        console.log(`${securityId}: ${lastTradedPrice}`);
+        // console.log(`${securityId}: ${lastTradedPrice}`);
       if(feed == 'LTP' && lastTradeTime > 0){
         return {security:securityId,ltp:lastTradedPrice}
       }
