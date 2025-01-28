@@ -11,8 +11,8 @@ export class MarketFeedService {
 
     constructor(private http: HttpClient){}
 
-    subscribe(criteria:any){
-        return this.http.post(`${this.apiUrl}/request`,{});
+    subscribe(securities:any){
+        return this.http.post(`${this.apiUrl}/request`,{control:15,securities});
     }
 
     async usubscribe(){

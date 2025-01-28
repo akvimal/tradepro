@@ -86,26 +86,26 @@ export class OrderService {
     }
 
     async findOrderSummary(alertid,date=moment().format('YYYY-MM-DD')){
-        let sql = `select trend, symbol, coalesce(security_id, '') as security, leg, status, trigger_price as trigger,
+        let sql = `select trend, exchange, segment, symbol, coalesce(security_id, '') as security, leg, status, trigger_price as trigger,
                 sum(order_qty) as qty, avg(traded_price) as price 
                     from orders where alert_id = ${alertid}`;
         if(date == undefined)
             sql += ` and date(order_dt) = current_date`;
         else
             sql += ` and date(order_dt) = '${date}'`;
-        sql += ` group by trend, symbol, security, leg, status, order_dt, order_qty, traded_price, trigger_price
+        sql += ` group by trend, exchange, segment, symbol, security, leg, status, order_dt, order_qty, traded_price, trigger_price
                     order by trend, symbol, status desc`;
        
         const orders = await this.manager.query(sql);
         const summary = {bullish: [], bearish: []}
         orders.filter(o => o.leg == 'MAIN' && o.status == 'TRADED').forEach(order => {
-            const {trend,symbol,order_type,security,qty,price,trigger} = order;
+            const {trend,symbol,exchange, segment,order_type,security,qty,price,trigger} = order;
             if(trend == 'Bullish'){ 
                 //if already exists add qty
-                summary.bullish.push({symbol,security,qty,balance:qty,price,trigger})
+                summary.bullish.push({symbol,exchange,segment,security,qty,balance:qty,price,trigger})
             }
             if(trend == 'Bearish'){ 
-                summary.bearish.push({symbol,security,qty,balance:qty,price,trigger})
+                summary.bearish.push({symbol,exchange,segment,security,qty,balance:qty,price,trigger})
             }
         });
 

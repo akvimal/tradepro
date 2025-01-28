@@ -40,6 +40,10 @@ export class AppModule implements OnModuleInit {
 
   async onModuleInit() {
     console.log('App Module Initialized');
+    setInterval(() => {
+      console.log('heart beat to square off or adjust SL');
+      
+    }, 1000);
   }
 
 }

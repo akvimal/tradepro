@@ -3,6 +3,7 @@ import { HttpClient } from "@angular/common/http";
 import { environment } from "../../../environments/environment";
 import { Subject } from "rxjs";
 import { WebSocketService } from "../../websocket.service";
+import { MarketFeedService } from "../market-feed.service";
 
 @Injectable({
     providedIn: 'root'
@@ -14,10 +15,20 @@ export class OrderService {
     private subject = new Subject(); 
     orders$ = this.subject.asObservable();
 
-    constructor(private http: HttpClient, private socketService:WebSocketService){
+    constructor(private http: HttpClient, private socketService:WebSocketService, private feedService:MarketFeedService){
         this.socketService.receiveMessages().subscribe((message) => {
             if(message && message.type == 'ORDER'){
                 this.updateOrders(message.orders);
+                    // console.log('>>>',message.orders);
+                    // subscribe to LTP feed for all orders
+                    const bothorders = [...message.orders['bullish'],...message.orders['bearish']]
+                    const feedSubscribeList = bothorders.map(o => {
+                        return {exchange:o['exchange']+'_'+o['segment'],security_id:o['security']}});
+                    // console.log(feedSubscribeList);
+                    
+                    this.feedService.subscribe(feedSubscribeList).subscribe(data=>{
+                        console.log('subscribed');
+                    });
             }
         }); 
     }
@@ -34,8 +45,6 @@ export class OrderService {
     }
 
     refreshPcnt(orders:any){
-        console.log(orders);
-        
         orders.bullish.forEach((s:any) => {
             if(s.balance == 0) {
                 s['change_valu'] = s['exit'] - +s['price'];

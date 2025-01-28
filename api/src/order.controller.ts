@@ -29,7 +29,7 @@ export class OrderController {
     for (const [key, value] of Object.entries(secs[0])) {
       await this.service.squareOff(key,value['last_price']); 
     }
-    const orders = await this.service.findOrderSummary({alertid});
+    const orders = await this.service.findOrderSummary(alertid);
             await this.gateway.publishData({type:'ORDER',orders});
     //get LTP of security and update the SL with traded status
     //publish latest orders
