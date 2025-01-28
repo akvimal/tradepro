@@ -2,6 +2,7 @@ services:
 
   rabbitmq:
     image: rabbitmq:3
+    container_name: tradepro-mq
     ports:
       - '5672:5672'
     networks:
@@ -28,13 +29,14 @@ services:
       context: ./api
     environment:
       NODE_ENV: production
-      PORT: 3000
+      PORT: 3001
       DB_NAME: postgres
       #DB_HOST: host.docker.internal
       DB_HOST: tradepro-db
       DB_PORT: 5432
       DB_USER: postgres
       DB_PASSWORD: trade@123 
+      MESSAGE_URL: amqp://tradepro-mq:5672
     depends_on:
       - postgres
       - rabbitmq
