@@ -28,7 +28,7 @@ export class OrderProcessor {
                 }
             }
             
-            const orders = await this.orderService.findOrderSummary({alertid:alert_id});
+            const orders = await this.orderService.findOrderSummary(alert_id);
             await this.gateway.publishData({type:'ORDER',orders});
          
             // const payload = {

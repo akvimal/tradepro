@@ -9,12 +9,12 @@ export class DhanService {
 
   constructor(private readonly apiService: ApiService) {}
 
-  async getLtp(securities:[]){
-    const response = await this.apiService.postData(`https://api.dhan.co/v2/marketfeed/ltp`,{NSE_EQ:securities},{
+  async getLtp(payload){
+    const response = await this.apiService.postData(`https://api.dhan.co/v2/marketfeed/ltp`,payload,{
         'access-token':this.token,
         'client-id': this.client
       });
-      return response;
+      return response['data']['data'];
   }
 
 }

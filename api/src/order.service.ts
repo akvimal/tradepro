@@ -1,6 +1,7 @@
 import { Inject, Injectable, LoggerService } from "@nestjs/common";
 import { InjectEntityManager } from "@nestjs/typeorm";
 import { EntityManager } from "typeorm";
+import * as moment from 'moment';
 
 @Injectable()
 export class OrderService {
@@ -58,6 +59,20 @@ export class OrderService {
         }
     }
 
+    async squareOff(security,price){
+        console.log('to sqr', security + ' ' + price);
+        const sql = `update orders set traded_price = ${price}, status = 'TRADED' where security_id = '${security}' and leg = 'SL'`;
+        try {
+            await this.manager.query(sql);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    async adjustSL(security,price){
+        
+    }
+
     async findOrders(symbol, alert_id, intraday = true){
         let sql = `select * from orders where symbol = '${symbol}' and alert_id = ${alert_id}`;
         if(intraday)
@@ -70,44 +85,49 @@ export class OrderService {
         return await this.manager.query(sql);
     }
 
-    async findOrderSummary(payload){
-        const {alertid,date} = payload;
-        let sql = `select trend, symbol, coalesce(security_id, '') as security, leg, status, 
+    async findOrderSummary(alertid,date=moment().format('YYYY-MM-DD')){
+        let sql = `select trend, symbol, coalesce(security_id, '') as security, leg, status, trigger_price as trigger,
                 sum(order_qty) as qty, avg(traded_price) as price 
-                    from orders where date(order_dt) = current_date and alert_id = ${alertid}`;
+                    from orders where alert_id = ${alertid}`;
         if(date == undefined)
             sql += ` and date(order_dt) = current_date`;
         else
             sql += ` and date(order_dt) = '${date}'`;
-        sql += ` group by trend, symbol, security, leg, status, order_dt, order_qty, traded_price
+        sql += ` group by trend, symbol, security, leg, status, order_dt, order_qty, traded_price, trigger_price
                     order by trend, symbol, status desc`;
        
         const orders = await this.manager.query(sql);
         const summary = {bullish: [], bearish: []}
         orders.filter(o => o.leg == 'MAIN' && o.status == 'TRADED').forEach(order => {
-            const {trend,symbol,order_type,security,qty,price,time} = order;
+            const {trend,symbol,order_type,security,qty,price,trigger} = order;
             if(trend == 'Bullish'){ 
                 //if already exists add qty
-                summary.bullish.push({symbol,security,qty,balance:qty,price})
+                summary.bullish.push({symbol,security,qty,balance:qty,price,trigger})
             }
             if(trend == 'Bearish'){ 
-                summary.bearish.push({symbol,security,qty,balance:qty,price})
+                summary.bearish.push({symbol,security,qty,balance:qty,price,trigger})
             }
         });
 
         summary.bullish.forEach(bull => {
-            const found = orders.find(o => o.trend=='Bullish' && o.symbol == bull.symbol && o.leg == 'SL' && o.status == 'TRADED');
+            const found = orders.find(o => o.trend=='Bullish' && o.symbol == bull.symbol && o.leg == 'SL');
             if(found){
-                bull['balance'] -= found['qty'];
-                bull['exit'] = found['price'];
+                if(found['status']=='TRADED'){
+                    bull['balance'] -= found['qty'];
+                    bull['exit'] = found['price'];
+                }
+                bull['trigger'] = found['trigger'];
             }
         });
 
         summary.bearish.forEach(bear => {
-            const found = orders.find(o => o.trend=='Bearish' && o.symbol == bear.symbol && o.leg == 'SL' && o.status == 'TRADED');
+            const found = orders.find(o => o.trend=='Bearish' && o.symbol == bear.symbol && o.leg == 'SL');
             if(found){
-                bear['balance'] -= found['qty'];
-                bear['exit'] = found['price'];
+                if(found['status']=='TRADED'){
+                    bear['balance'] -= found['qty'];
+                    bear['exit'] = found['price'];
+                }
+                bear['trigger'] = found['trigger'];
             }
         });
         

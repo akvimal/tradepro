@@ -28,31 +28,26 @@ export class AlertOrdersComponent {
         private feedService:MarketFeedService){
         this.wsService.receiveMessages().subscribe((message) => {
             // this.message = message;
-            const {type,security,ltp} = message;
-            if(message && type == 'PRICE')
             // this.audioElem.nativeElement.play()
-            {
-            //  console.log('prices received:', message.prices);
-            //  console.log(this.orders);
-            
-            this.orders.bullish.forEach((s:any) => {
-                // const priceFound = message.prices.find((p:any) => p.security == s.security);
-                if(s.security == security) {
-                    s['ltp'] = ltp;
-                    s['change_valu'] = s['ltp'] - +s['price'];
-                    s['change_pcnt'] = (s['ltp'] - +s['price'])/+s['price'];
-                }
-             });
-             this.orders.bearish.forEach((s:any) => {
-                // const priceFound = message.prices.find((p:any) => p.security == s.security);
-                if(s.security == security) {
-                    s['ltp'] = ltp;
-                    s['change_valu'] = +s['price'] - s['ltp'];
-                    s['change_pcnt'] = (+s['price'] - s['ltp'])/+s['price'];
-                }
-             });
+            const {type,security,ltp} = message;
+            if(message && type == 'PRICE') {
+                this.orders.bullish.forEach((s:any) => {
+                    if(s.security == security) {
+                        s['ltp'] =  s.balance > 0 ? ltp : s['exit'];
+                        s['change_valu'] = s['ltp'] - +s['price'];
+                        s['change_pcnt'] = (s['ltp'] - +s['price'])/+s['price'];
+                    }
+                });
+                this.orders.bearish.forEach((s:any) => {
+                    if(s.security == security) {
+                        s['ltp'] = s.balance > 0 ? ltp : s['exit'];
+                        s['change_valu'] = +s['price'] - s['ltp'];
+                        s['change_pcnt'] = (+s['price'] - s['ltp'])/+s['price'];
+                    }
+                });
             }
           }); 
+
           this.subscription = this.service.orders$
           .subscribe(orders => {
             this.orders = orders;
@@ -67,10 +62,8 @@ export class AlertOrdersComponent {
        this.fetch(this.alertid,this.date);
     }
 
-    fetch(alertid:number,date:string){
-        this.service.findAlertOrders({alertid,date}).subscribe((data:any) => {
-            this.orders = data;
-        }); 
+    async fetch(alertid:number,date:string){
+        await this.service.findAlertOrders({alertid,date});
     }
 
     toggleTrend(direction:string){
@@ -78,15 +71,17 @@ export class AlertOrdersComponent {
             this.buy = !this.buy;
             this.alertService.updateTrendFlag(this.alertid,direction,this.buy).subscribe(data => {
                 console.log(data);
-                
             });
         }
         if(direction == 'SELL'){
             this.sell = !this.sell;
             this.alertService.updateTrendFlag(this.alertid,direction,this.sell).subscribe(data => {
                 console.log(data);
-                
             });
         }
+    }
+
+    squareOff(security:string){
+        this.service.squareOff(this.alertid,'NSE_EQ',security)
     }
 }
