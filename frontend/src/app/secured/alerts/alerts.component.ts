@@ -1,5 +1,5 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import moment from 'moment';
+import { Component } from '@angular/core';
+import { formatDate} from '@angular/common';
 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -17,8 +17,7 @@ export class AlertsComponent {
   alert:any;
   date:string = '';
 
-  constructor(private service:AlertService){
-  }
+  constructor(private service:AlertService){}
 
   ngOnInit(){
     this.today();
@@ -29,7 +28,7 @@ export class AlertsComponent {
   }
 
   today(){
-    this.date = moment().format('YYYY-MM-DD');
+    this.date = formatDate(new Date(), 'yyyy-MM-dd', 'en-US');
   }
 
 }

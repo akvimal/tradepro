@@ -1,7 +1,7 @@
 import { Component, ElementRef, Input, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import moment from 'moment';
-import * as momenttz from 'moment-timezone';
+// import moment from 'moment';
+// import * as momenttz from 'moment-timezone';
 import { FormsModule } from '@angular/forms';
 import { WebSocketService } from '../../websocket.service';
 import { TrendService } from './trend.service';
@@ -64,7 +64,7 @@ export class TrendComponent {
       this.bearish = [];
       this.alerts = data.map((d:any) => {
         
-        d['triggered'] = momenttz.tz(d['triggered'], 'Asia/Kolkata');
+        // d['triggered'] = momenttz.tz(d['triggered'], 'Asia/Kolkata');
         // d['triggered'] = moment(d['triggered'], 'YYYY-MM-DD h:mm:ss');
         // d['triggered'] = d['triggered'].endsWith('Z') ? d['triggered'].substring(0,d['triggered'].length-1) : d['triggered'];
         d['bullish'] = d['bullish'].split(',');
