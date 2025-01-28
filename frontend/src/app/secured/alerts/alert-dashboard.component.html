@@ -1,0 +1,26 @@
+<div *ngIf="alert">
+
+<div class="row">
+    <div class="col-6">        
+        <h4>{{alert.title}}</h4>
+            {{alert.config?.exchange}} | {{alert.config?.segment}} | {{alert.config?.instrument}} | {{alert.interval}} {{alert.frequency}}
+    </div>
+    <div class="col-6 d-flex justify-content-end">
+        <h4>{{alert.balance|currency:'INR':'symbol-narrow':'1.0-0'}}</h4>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <input type="date" [(ngModel)]="date">
+        <button (click)="today()">Today</button>
+    </div>
+    </div>
+    <div class="row mt-2">
+    <div class="col-6">
+        <app-alert-trend [alertid]="id" [date]="date"></app-alert-trend>
+    </div>
+    <div class="col-6">
+        <app-alert-orders [alertid]="id" [date]="date" [buy]="alert.buy" [sell]="alert.sell"></app-alert-orders>
+    </div>
+</div>
+</div>

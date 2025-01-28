@@ -1,7 +1,5 @@
-import { Component, ElementRef, Input, OnInit, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, Input, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
-// import moment from 'moment';
-// import * as momenttz from 'moment-timezone';
 import { FormsModule } from '@angular/forms';
 import { WebSocketService } from '../../websocket.service';
 import { TrendService } from './trend.service';
@@ -25,22 +23,19 @@ export class TrendComponent {
   bullish:string[] = [];
   bearish:string[] = [];
 
-  @Input() alertid:number = 0;
+  @Input() alertid:string = '';
   @Input() date:string = '';
   
   message: any = {};
   alerts:any;
   
-  // @ViewChild('myaudio') audioElem:any;
   symbolCountArray: {symbol:string,bullish?:number,bearish?:number}[] = [];
 
   constructor(private wsService: WebSocketService,
     private service: TrendService
   ){
     this.wsService.receiveMessages().subscribe((message) => {
-      // this.message = message;
       if(message && message.type == 'SIGNAL')
-      // this.audioElem.nativeElement.play()
       {
         this.fetch(message['alertid'], this.date); 
       }
@@ -48,25 +43,21 @@ export class TrendComponent {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    this.fetch(this.alertid,changes['date'].currentValue);
+    // console.log(changes);
+    if(changes['alertid'])
+      this.alertid = changes['alertid'].currentValue;
+    if(changes['date'])
+      this.date = changes['date'].currentValue;
+
+    this.fetch(this.alertid,this.date);
   }
 
-  // ngOnInit(): void {
-  //   this.fetch(this.alertid);
-  // }
-
-
-  fetch(id:number,date:string){
-    // const date = moment().format('YYYY-MM-DD');
-    // const date = '2025-01-15';
+  fetch(id:string,date:string){
     this.service.findAllById({criteria:{id,date:this.date}}).subscribe((data:any) => {
       this.bullish = [];
       this.bearish = [];
       this.alerts = data.map((d:any) => {
         
-        // d['triggered'] = momenttz.tz(d['triggered'], 'Asia/Kolkata');
-        // d['triggered'] = moment(d['triggered'], 'YYYY-MM-DD h:mm:ss');
-        // d['triggered'] = d['triggered'].endsWith('Z') ? d['triggered'].substring(0,d['triggered'].length-1) : d['triggered'];
         d['bullish'] = d['bullish'].split(',');
         d['bearish'] = d['bearish'].split(',');
         d['diff'] = d['total_bullish'] - d['total_bearish'];

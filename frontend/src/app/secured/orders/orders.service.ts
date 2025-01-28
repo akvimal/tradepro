@@ -66,7 +66,7 @@ export class OrderService {
         this.subject.next(data);
     }
 
-    squareOff(alertid:number,exchange:string,security:string){
+    squareOff(alertid:string,exchange:string,security:string){
         const obj = JSON.parse(`{"${exchange}":[${security}]}`);
         this.http.post(`${this.apiUrl}/sqroff/${alertid}`,obj).subscribe(data => {
             console.log('squared');

@@ -1,20 +1,12 @@
-<div *ngIf="alert">
-<h4>{{alert.title}}</h4>
+<ul>
+    <li class="menu-item" *ngFor="let a of alerts">
+        <a class="nav-link" [routerLink]="[a.id]"><span>{{a.title}}</span></a>
+    </li>
+</ul>
+<br>
 
-<div class="row">
-    <div class="col-12">
-        <input type="date" [(ngModel)]="date">
-        <button (click)="today()">Today</button>
+    <div class="row">
+        <div class="col-12">
+            <router-outlet></router-outlet>
+        </div>
     </div>
-    </div>
-    <div class="row mt-2">
-    <div class="col-6">
-        <h6>Trend</h6>
-        <app-alert-trend [alertid]="id" [date]="date"></app-alert-trend>
-    </div>
-    <div class="col-6">
-        <h6>Orders</h6>
-        <app-alert-orders [alertid]="id" [date]="date" [buy]="alert.buy" [sell]="alert.sell"></app-alert-orders>
-    </div>
-</div>
-</div>

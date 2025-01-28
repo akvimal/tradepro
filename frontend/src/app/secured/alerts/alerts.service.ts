@@ -11,7 +11,7 @@ export class AlertService {
 
     constructor(private http: HttpClient){}
 
-    findById(id:number){
+    findById(id:string){
         return this.http.get(`${this.apiUrl}/${id}`);
     }
 
@@ -23,7 +23,7 @@ export class AlertService {
         return this.http.post(`${this.apiUrl}/filter`,criteria);
     }
 
-    updateTrendFlag(alertId:number,trend:string,on:boolean){
+    updateTrendFlag(alertId:string,trend:string,on:boolean){
         return this.http.put(`${this.apiUrl}/trend`,{alertId,trend,on});
     }
 }

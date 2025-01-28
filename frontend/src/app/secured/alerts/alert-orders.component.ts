@@ -14,7 +14,7 @@ import { AlertService } from "./alerts.service";
 })
 export class AlertOrdersComponent {
 
-    @Input() alertid:number = 0;
+    @Input() alertid:string = '';
     @Input() date:string = '';
     
     @Input() buy = true;
@@ -55,14 +55,22 @@ export class AlertOrdersComponent {
     }
 
     ngOnChanges(changes: SimpleChanges) {
-        this.fetch(this.alertid,changes['date'].currentValue);
+        // console.log(changes);
+        if(changes['alertid'])
+            this.alertid = changes['alertid'].currentValue;
+        if(changes['date'])
+            this.date = changes['date'].currentValue;
+
+        this.fetch(this.alertid,this.date);
     }
     
     ngOnInit(){
+        console.log('alert id: ',this.alertid);
+        
        this.fetch(this.alertid,this.date);
     }
 
-    async fetch(alertid:number,date:string){
+    async fetch(alertid:string,date:string){
         await this.service.findAlertOrders({alertid,date});
     }
 

@@ -13,7 +13,9 @@ export class AlertService {
     }
 
     async findOne(id:number){
-        const alert = await this.manager.query(`select * from alerts where id = ${id}`);
+        const alert = await this.manager.query(`select a.*, coalesce(t.balance, 0) as balance from alerts a 
+            left join accounts t on t.alert_id = a.id 
+            where a.id = ${id}`);
         return alert;
     }
 
