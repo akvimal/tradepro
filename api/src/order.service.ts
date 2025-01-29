@@ -59,14 +59,16 @@ export class OrderService {
         }
     }
 
-    async squareOff(security,price){
-        console.log('to sqr', security + ' ' + price);
-        const sql = `update orders set traded_price = ${price}, status = 'TRADED' where security_id = '${security}' and leg = 'SL'`;
-        try {
-            await this.manager.query(sql);
-        } catch (error) {
-            console.log(error);
-        }
+    async getPendingSlLeg(alertid, security){
+        const sql = `select * from orders where alert_id = ${alertid} and leg = 'SL' and status = 'PENDING' 
+                and security_id = '${security}'`;
+        return await this.manager.query(sql);
+    }
+
+    async squareOff(id,price){
+        const sql = `update orders set traded_price = ${price}, status = 'TRADED' 
+                where id = ${id}`;
+        return await this.manager.query(sql);
     }
 
     async adjustSL(security,price){
@@ -85,10 +87,10 @@ export class OrderService {
         return await this.manager.query(sql);
     }
 
-    async findOrderSummary(alertid,date=moment().format('YYYY-MM-DD')){
+    async findOrderSummary(strategy,date=moment().format('YYYY-MM-DD')){
         let sql = `select trend, exchange, segment, symbol, coalesce(security_id, '') as security, leg, status, trigger_price as trigger,
                 sum(order_qty) as qty, avg(traded_price) as price 
-                    from orders where alert_id = ${alertid}`;
+                    from orders where alert_id = ${strategy}`;
         if(date == undefined)
             sql += ` and date(order_dt) = current_date`;
         else
@@ -99,6 +101,7 @@ export class OrderService {
         const orders = await this.manager.query(sql);
         const summary = {bullish: [], bearish: []}
         orders.filter(o => o.leg == 'MAIN' && o.status == 'TRADED').forEach(order => {
+        // orders.filter(o => o.status == 'TRADED').forEach(order => {    
             const {trend,symbol,exchange, segment,order_type,security,qty,price,trigger} = order;
             if(trend == 'Bullish'){ 
                 //if already exists add qty

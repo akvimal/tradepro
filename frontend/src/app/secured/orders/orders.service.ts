@@ -4,6 +4,7 @@ import { environment } from "../../../environments/environment";
 import { Subject } from "rxjs";
 import { WebSocketService } from "../../websocket.service";
 import { MarketFeedService } from "../market-feed.service";
+import { SquareOffOrder } from "../squareoff-order.model";
 
 @Injectable({
     providedIn: 'root'
@@ -19,7 +20,7 @@ export class OrderService {
         this.socketService.receiveMessages().subscribe((message) => {
             if(message && message.type == 'ORDER'){
                 this.updateOrders(message.orders);
-                    // console.log('>>>',message.orders);
+                    console.log('>>>',message.orders);
                     // subscribe to LTP feed for all orders
                     const bothorders = [...message.orders['bullish'],...message.orders['bearish']]
                     const feedSubscribeList = bothorders.map(o => {
@@ -66,9 +67,9 @@ export class OrderService {
         this.subject.next(data);
     }
 
-    squareOff(alertid:string,exchange:string,security:string){
-        const obj = JSON.parse(`{"${exchange}":[${security}]}`);
-        this.http.post(`${this.apiUrl}/sqroff/${alertid}`,obj).subscribe(data => {
+    squareOff(request:SquareOffOrder[]){
+        // const obj = JSON.parse(`{"${exchange}":[${security}]}`);
+        this.http.post(`${this.apiUrl}/sqroff`,request).subscribe(data => {
             console.log('squared');
         });
     }

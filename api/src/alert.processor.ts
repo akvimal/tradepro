@@ -3,7 +3,6 @@ import * as moment from 'moment-timezone';
 import { AlertService } from "./alert.service";
 import { OrderService } from "./order.service";
 import { RabbitMQService } from "./common/rabbitmq.service";
-import { OrderConsumer } from "./order.consumer";
 import { AccountService } from "./account.service";
 import { MasterService } from "./master.service";
 
@@ -22,6 +21,8 @@ export class AlertProcessor {
         const {alertid,direction,provider,stocks,trigger_prices} = content;
         if(provider === 'chartink'){
             const alert = (await this.alertService.findOne(alertid))[0];
+            const {exchange,segment,instrument} = alert['config'];
+
             if(alert && alert.active){
                 
                 const account = (await this.accountService.findByAlert(alert.id))[0];
@@ -51,9 +52,9 @@ export class AlertProcessor {
                         // for same direction signal and unsold order qty exists for the day, then ignore
                         // for opposite direction signal and unsold order qty exists for the day, then square off (update SL leg to market)
                         if(proceed){
-                            const secInfo = (await this.masterService.findSecurityInfo('NSE','EQ',symbol))[0];
-                            const order = this.buildOrderRequest(alert, account['balance'], direction, symbol, secInfo['security_id'], price);
-                            await this.mqService.publishMessage('orderQueue', order).catch(error => console.log(error));  
+                            const secInfo = (await this.masterService.findSecurityInfo(exchange,segment,symbol))[0];
+                            const orders = this.buildOrderRequest(alert, account['balance'], direction, symbol, secInfo['security_id'], price);
+                            await this.mqService.publishMessage('orderQueue', {type:'NEW',orders}).catch(error => console.log(error));  
                         }
                     }
                 }

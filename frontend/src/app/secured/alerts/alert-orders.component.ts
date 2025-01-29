@@ -5,6 +5,8 @@ import { WebSocketService } from "../../websocket.service";
 import { Subscription } from "rxjs";
 import { MarketFeedService } from "../market-feed.service";
 import { AlertService } from "./alerts.service";
+import { OrderSummary } from "../orders/order-summary.model";
+import { SquareOffOrder } from "../squareoff-order.model";
 
 @Component({
     imports: [CommonModule],
@@ -65,8 +67,6 @@ export class AlertOrdersComponent {
     }
     
     ngOnInit(){
-        console.log('alert id: ',this.alertid);
-        
        this.fetch(this.alertid,this.date);
     }
 
@@ -89,7 +89,40 @@ export class AlertOrdersComponent {
         }
     }
 
-    squareOff(security:string){
-        this.service.squareOff(this.alertid,'NSE_EQ',security)
+    squareOff(type:string,security:string){
+        const request = this.buildSquareOffRequest(type,security);
+        request.length > 0 && this.service.squareOff(this.buildSquareOffRequest(type,security));
     }
+
+    buildSquareOffRequest(type:string,security:string){
+        const req:SquareOffOrder[] = [];
+        if(type == 'All') {
+            const recs = Object.values(this.orders);
+            const orders = recs.flat(1) as OrderSummary[];
+            orders.forEach((order: OrderSummary) => {
+                const {exchange,segment,security} = order;
+                req.push({strategy:this.alertid,exchange,segment,security});
+            });
+        }
+        else if(type == 'Bullish' || type == 'Bearish'){
+            const orders = this.orders[type.toLowerCase()];
+            orders.forEach((order:any) => {
+                const {exchange,segment,security} = order;
+                req.push({strategy:this.alertid,exchange,segment,security});
+            });
+        }
+        else{
+            if(security !== '') {
+                const recs = Object.values(this.orders);
+                const orders = recs.flat(1) as OrderSummary[];
+                const rec = orders.find((rec: OrderSummary) => rec.security == security);
+                if(rec){
+                    const {exchange,segment,security} = rec;
+                    req.push({strategy:this.alertid,exchange,segment,security});
+                }
+            }
+        }
+        return req;
+    }
+
 }

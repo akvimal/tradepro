@@ -33,6 +33,7 @@ export class WebSocketService implements OnModuleInit, OnModuleDestroy {
 
     this.ws.on('message',async (data) => {
         const price = this.parseBinaryData(data, 'LTP');
+        // console.log(price);
         await this.gateway.publishData({type:'PRICE', ...price});
     });
 
@@ -47,7 +48,7 @@ export class WebSocketService implements OnModuleInit, OnModuleDestroy {
   }
 
   sendMessage(message: any) {
-    console.log('received message for socket',message);
+    // console.log('received message for socket',message);
     
     if (this.ws.readyState === WebSocket.OPEN) {
       this.ws.send(JSON.stringify(message));

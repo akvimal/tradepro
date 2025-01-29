@@ -1,20 +1,29 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ApiService } from './api.service';
+import { AppConfigService } from './common/app-config.service';
 
 @Injectable()
 export class DhanService {
 
-  token:string = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJkaGFuIiwicGFydG5lcklkIjoiIiwiZXhwIjoxNzM4MzA5ODgxLCJ0b2tlbkNvbnN1bWVyVHlwZSI6IlNFTEYiLCJ3ZWJob29rVXJsIjoiIiwiZGhhbkNsaWVudElkIjoiMTEwMTEyMTUxNSJ9.hYmfdcI7xYcSPFtJ6hh3vd9VGfjRASywIQ34K6R_guDMwsqmY0iKqSHPauYksIByX5m05g3Do2g29OQwN7GJFg'
-  client:string = '1101121515'
-
-  constructor(private readonly apiService: ApiService) {}
+  constructor(private readonly apiService: ApiService, 
+    private readonly appConfigService:AppConfigService) {}
 
   async getLtp(payload){
-    const response = await this.apiService.postData(`https://api.dhan.co/v2/marketfeed/ltp`,payload,{
-        'access-token':this.token,
-        'client-id': this.client
+    // console.log('LTP Request: ',JSON.stringify(payload));
+    
+    const partner = await this.appConfigService.getPartnerInfo('Dhan');
+    const {access_token,client_id,api_url} = partner['config'];
+    const response = await this.apiService.postData(`${api_url}/marketfeed/ltp`,payload,{
+        'access-token': access_token,
+        'client-id': client_id
       });
-      return response['data']['data'];
+      const result = [];
+      const secs = Object.values(response['data']['data']);
+
+      for (const [key, value] of Object.entries(secs[0])) {
+        result.push({security:key,price:value['last_price']})
+      }
+      return result;
   }
 
 }

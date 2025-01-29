@@ -22,14 +22,14 @@ export class SignalController {
     //save incoming alert to db
     console.log(payload);
     try {
-        console.log('Saving alert to db');
+        console.log('Saving trend to db');
         await this.trendService.save(alertid, direction, this.getTimestampWithTime(payload['triggered_at']), payload.stocks);
+        
         console.log('publishing alert to gateway');
         await this.gateway.publishData({type:'SIGNAL',alertid,payload});
+        
         console.log('publishing alert to mq');
         await this.mqService.publishMessage(AlertConsumer.ALERT_QUEUE, {...payload,alertid,direction,provider}).catch(error => console.log(error));  
-        console.log('published alert to mq');
-        
     } catch (error) {
       console.log(error);
     }

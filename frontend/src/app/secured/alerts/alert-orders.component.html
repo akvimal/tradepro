@@ -1,8 +1,10 @@
 
+<button (click)="squareOff('All','')">Sqr All</button>
 <div class="row">
     <div class="col-12">
         <h6>Bullish</h6>
-        <button (click)="toggleTrend('BUY')">Turn {{buy ? 'OFF' : 'ON'}}</button>
+        <button (click)="toggleTrend('BUY')">Turn {{buy ? 'OFF' : 'ON'}}</button>&nbsp;&nbsp;
+        <button (click)="squareOff('Bullish','')">Sqr</button>
         <table width="100%">
             <tr>
                 <th>Security</th>
@@ -19,7 +21,7 @@
                 </div></td>
                 <td [ngStyle]="{background:o.change_pcnt > 0 ? '#abebc6' : '#f5b7b1'}">
                     {{(o.balance == 0 ? o.exit : o.ltp) | number : '1.1-2'}} ({{o.change_pcnt|percent:'0.1-1'}})
-                    <button *ngIf="o.balance > 0" (click)="squareOff(o.security)">Sqr</button>
+                    <button *ngIf="o.balance > 0" (click)="squareOff('',o.security)">Sqr</button>
                 </td>
                 <!-- ({{o.change_pcnt|percent:'0.1-1'}}) -->
             </tr>
@@ -27,7 +29,8 @@
     </div>
     <div class="col-12 mt-2">
         <h6>Bearish</h6>
-        <button (click)="toggleTrend('SELL')">Turn {{sell ? 'OFF' : 'ON'}}</button>
+        <button (click)="toggleTrend('SELL')">Turn {{sell ? 'OFF' : 'ON'}}</button>&nbsp;&nbsp;
+        <button (click)="squareOff('Bearish','')">Sqr</button>
         <table width="100%">
             <tr>
                 <th>Security</th>
@@ -44,7 +47,7 @@
                 </div></td>
                 <td [ngStyle]="{background:o.change_pcnt > 0 ? '#abebc6' : '#f5b7b1'}">
                     {{(o.balance == 0 ? o.exit : o.ltp) | number : '1.1-2'}} ({{o.change_pcnt|percent:'0.1-1'}})
-                    <button *ngIf="o.balance > 0" (click)="squareOff(o.security)">Sqr</button>
+                    <button *ngIf="o.balance > 0" (click)="squareOff('',o.security)">Sqr</button>
                 </td>
                 <!-- ({{o.change_pcnt|percent:'0.1-1'}}) -->
             </tr>
