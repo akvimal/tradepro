@@ -51,7 +51,7 @@ export class AlertOrdersComponent {
 
           this.subscription = this.service.orders$
           .subscribe(data => {
-            console.log(`>>> orders [${this.date}] from cache`,data);
+            // console.log(`>>> orders [${this.date}] from cache`,data);
             
             const found = data.find((st:any) => st.strategy == this.alertid && st['orders']['date'] == this.date);            
             this.orders = found ? found['orders'] : [];
@@ -99,37 +99,9 @@ export class AlertOrdersComponent {
     buildSquareOffRequest(type:string,security:string){
         const req:SquareOffOrder[] = [];
         if(type == 'All' || security !== '') {
-            // const recs = Object.values(this.orders);
-            // const orders = recs.flat(1) as OrderSummary[];
-            // console.log('ORDER to SQR',orders);
-            
-            // orders.forEach((order: OrderSummary) => {
-            //     const {exchange,segment,security} = order;
-            //     req.push({strategy:this.alertid,exchange,segment,security});
-            // });
             this.addToRequest(this.orders,req,'Bullish',security);
             this.addToRequest(this.orders,req,'Bearish',security);
         }
-        // else if(type == 'Bullish' || type == 'Bearish'){
-            // const orders = this.orders[type.toLowerCase()];
-            // orders.forEach((order:any) => {
-            //     const {exchange,segment,security} = order;
-            //     req.push({strategy:this.alertid,exchange,segment,security});
-            // });
-            // this.addToRequest(this.orders,req,type,security);
-        // }
-        // else{
-            // if(security !== '') {
-            //     const recs = Object.values(this.orders);
-            //     const orders = recs.flat(1) as OrderSummary[];
-            //     const rec = orders.find((rec: OrderSummary) => rec.security == security);
-            //     if(rec){
-            //         const {exchange,segment,security} = rec;
-            //         req.push({strategy:this.alertid,exchange,segment,security});
-            //     }
-            // }
-            // this.addToRequest(this.orders,req,type,security);
-        // }
         else
             this.addToRequest(this.orders,req,type,security);
         return req;
@@ -137,11 +109,11 @@ export class AlertOrdersComponent {
 
     addToRequest(orders:any,req:SquareOffOrder[],type:string,secId:string){
         const temp = orders[type.toLowerCase()];
-            temp.forEach((order:any) => {
-                const {exchange,segment,security} = order;
-                if((secId !== '' && security == secId) || secId == '')
-                req.push({strategy:this.alertid,exchange,segment,security});
-            });
+        temp.forEach((order:any) => {
+            const {exchange,segment,security} = order;
+            if((secId !== '' && security == secId) || secId == '')
+            req.push({strategy:this.alertid,exchange,segment,security});
+        });
     }
 
 }

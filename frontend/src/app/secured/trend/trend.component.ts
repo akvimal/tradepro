@@ -53,7 +53,7 @@ export class TrendComponent {
   }
 
   fetch(id:string,date:string){
-    this.service.findAllById({strategy:id,date:this.date}).subscribe((data:any) => {
+    id == this.alertid && this.service.findAllById({strategy:id,date}).subscribe((data:any) => {
       this.bullish = [];
       this.bearish = [];
       this.alerts = data.map((d:any) => {
