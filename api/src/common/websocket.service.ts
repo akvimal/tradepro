@@ -67,8 +67,13 @@ export class WebSocketService implements OnModuleInit, OnModuleDestroy {
         
         // Parse header
         const feedResponseCode = data.readUInt8(0); // 1 byte
-        const messageLength = data.readInt16LE(1); // 2 bytes, Big-Endian
-        const exchangeSegment = data.readUInt8(3); // 1 byte
+        // const messageLength = data.readInt16LE(1); // 2 bytes, Big-Endian
+        // const exchangeSegment = data.readUInt8(3); // 1 byte
+        if(feedResponseCode == 50){
+          console.log('Feed Error: may be access token not valid');
+          return;
+        }
+        
         const securityId = data.readInt32LE(4); // 4 bytes, Big-Endian
         // Parse Body
         const lastTradedPrice = data.readFloatLE(8); // 4 bytes (float32)
@@ -78,7 +83,7 @@ export class WebSocketService implements OnModuleInit, OnModuleDestroy {
       if(feed == 'LTP' && lastTradeTime > 0){
         return {security:securityId,ltp:lastTradedPrice}
       }
-      return {};
+      
     }
 
 }
