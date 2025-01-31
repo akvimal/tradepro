@@ -8,7 +8,7 @@ export class AlertController {
 
   @Get('/:id')
   async findById(@Param('id') id:number) {
-   return (await this.service.findOne(id))[0]; 
+   return await this.service.findOne(id); 
   }
 
   @Get()

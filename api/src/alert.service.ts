@@ -13,9 +13,9 @@ export class AlertService {
     }
 
     async findOne(id:number){
-        const alert = await this.manager.query(`select a.*, coalesce(t.balance, 0) as balance from alerts a 
+        const alert = (await this.manager.query(`select a.*, coalesce(t.balance, 0) as balance from alerts a 
             left join accounts t on t.alert_id = a.id 
-            where a.id = ${id}`);
+            where a.id = ${id}`))[0];
         return alert;
     }
 

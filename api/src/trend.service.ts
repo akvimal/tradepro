@@ -1,35 +1,34 @@
-import { Inject, Injectable, LoggerService } from "@nestjs/common";
-import { InjectEntityManager, InjectRepository } from "@nestjs/typeorm";
-import { EntityManager, Repository } from "typeorm";
-import * as moment from 'moment';
+import { Injectable } from "@nestjs/common";
+import { InjectEntityManager } from "@nestjs/typeorm";
+import { EntityManager } from "typeorm";
 
 @Injectable()
 export class TrendService {
 
     constructor (@InjectEntityManager() private manager: EntityManager) {}
 
-    async findAllById(payload){
+    async findAllById(strategy,date,interval,limit){
         
-        let date = payload.criteria.date ? ` and to_char(triggered, 'YYYY-MM-DD') = '${payload.criteria.date}'` : '';
+        let dateFilter = date ? ` and to_char(triggered, 'YYYY-MM-DD') = '${date}'` : '';
         let query = `
             	WITH 
                 data_set as (
-                    select * from trend where alert_id = ${payload.criteria.id} ${date}
+                    select * from trend where alert_id = ${strategy} ${dateFilter}
                 ),
                 time_series AS (
                     SELECT generate_series(
                         (SELECT MIN(triggered) FROM data_set),
                         (SELECT MAX(triggered) FROM data_set),
-                        INTERVAL '15 minute'
+                        INTERVAL '${interval}'
                     ) AS minut
                 )
                 select fts.minut as triggered,
                 coalesce(bullish,'') as bullish, coalesce(array_length(string_to_array(bullish, ','), 1),0) AS total_bullish,
                 coalesce(bearish,'') as bearish, coalesce(array_length(string_to_array(bearish, ','), 1),0) AS total_bearish
-                from time_series fts left join trend s on fts.minut = date_trunc('minute',s.triggered) and s.alert_id = ${payload.criteria.id}
+                from time_series fts left join trend s on fts.minut = date_trunc('minute',s.triggered) and s.alert_id = ${strategy}
                 order by fts.minut DESC`;
 
-        query += payload.limit ? ` limit ${payload.limit}` : '';
+        query += limit ? ` limit ${limit}` : '';
 
         let alerts = [];
         try {

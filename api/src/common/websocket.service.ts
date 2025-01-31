@@ -12,6 +12,7 @@ export class WebSocketService implements OnModuleInit, OnModuleDestroy {
   constructor(private gateway:AlertGateway, private appConfigService:AppConfigService){}
 
   onModuleInit() {
+    //TODO: move opening socket to background task and open or close based on the exchange time window
     this.connectToWebSocket();
   }
 
@@ -23,12 +24,13 @@ export class WebSocketService implements OnModuleInit, OnModuleDestroy {
     const partner = await this.appConfigService.getPartnerInfo('Dhan');
     const {access_token,client_id,feed_url} = partner['config'];
     const endpoint = `${feed_url}&token=${access_token}&clientId=${client_id}&authType=2`;
-
+    
     this.ws = new WebSocket(endpoint);
     console.log('connecting to DHAN market feed socket ...');
     
     this.ws.on('open', () => {
       console.log('Connected to DHAN WebSocket server');
+      // this.sendMessage(JSON.stringify({control:11}))
     });
 
     this.ws.on('message',async (data) => {
@@ -48,7 +50,7 @@ export class WebSocketService implements OnModuleInit, OnModuleDestroy {
   }
 
   sendMessage(message: any) {
-    // console.log('received message for socket',message);
+    console.log('received message for socket',message);
     
     if (this.ws.readyState === WebSocket.OPEN) {
       this.ws.send(JSON.stringify(message));

@@ -8,15 +8,11 @@ import { AlertController } from './alert.controller';
 import { AlertGateway } from './alert.gateway';
 import { FeedController } from './feed.controller';
 import { FeedService } from './feed.service';
-import { OrderService } from './order.service';
-import { OrderController } from './order.controller';
 import { RabbitMQService } from './common/rabbitmq.service';
 import { AlertProcessor } from './alert.processor';
 import { AlertConsumer } from './alert.consumer';
 import { TrendService } from './trend.service';
 import { TrendController } from './trend.controller';
-import { OrderConsumer } from './order.consumer';
-import { OrderProcessor } from './order.processor';
 import { AccountService } from './account.service';
 import { MasterService } from './master.service';
 import { ApiService } from './api.service';
@@ -24,6 +20,12 @@ import { HttpModule } from '@nestjs/axios';
 import { DhanService } from './dhan.service';
 import { WebSocketService } from './common/websocket.service';
 import { AppConfigService } from './common/app-config.service';
+
+import { OrdersController } from './modules/orders/orders.controller';
+import { OrderConsumer } from './modules/orders/order.consumer';
+import { OrderProcessor } from './modules/orders/order.processor';
+import { OrdersRepo } from './modules/orders/orders.repo';
+import { OrdersService } from './modules/orders/orders.service';
 
 @Module({
   imports: [ ConfigModule.forRoot({
@@ -33,9 +35,12 @@ import { AppConfigService } from './common/app-config.service';
     useClass: TypeOrmConfigService,
   }),TypeOrmModule.forFeature([]),
 HttpModule],
-  controllers: [SignalController,TrendController,AlertController,FeedController,OrderController],
-  providers: [RabbitMQService, AppConfigService, WebSocketService, ApiService, DhanService, OrderConsumer, MasterService, AlertGateway, AlertConsumer, AlertProcessor, OrderProcessor,
-    TrendService, AlertService, FeedService, OrderService, AccountService],
+  controllers: [SignalController,TrendController,AlertController,FeedController,OrdersController],
+  providers: [RabbitMQService, AppConfigService, WebSocketService, AlertGateway, ApiService, DhanService, 
+    OrdersService, OrdersRepo, OrderProcessor, OrderConsumer, 
+    MasterService, 
+    AlertConsumer, AlertProcessor, AlertService,
+    TrendService,  FeedService,  AccountService],
 })
 export class AppModule implements OnModuleInit {
 

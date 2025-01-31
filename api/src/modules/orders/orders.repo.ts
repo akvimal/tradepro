@@ -1,10 +1,9 @@
 import { Inject, Injectable, LoggerService } from "@nestjs/common";
 import { InjectEntityManager } from "@nestjs/typeorm";
 import { EntityManager } from "typeorm";
-import * as moment from 'moment';
 
 @Injectable()
-export class OrderService {
+export class OrdersRepo {
 
     constructor (@InjectEntityManager() private manager: EntityManager) {}
 
@@ -75,7 +74,7 @@ export class OrderService {
         
     }
 
-    async findOrders(symbol, alert_id, intraday = true){
+    async findOrders(symbol, alert_id, intraday){
         let sql = `select * from orders where symbol = '${symbol}' and alert_id = ${alert_id}`;
         if(intraday)
             sql += ` and date(order_dt) = current_date `;
@@ -87,53 +86,57 @@ export class OrderService {
         return await this.manager.query(sql);
     }
 
-    async findOrderSummary(strategy,date=moment().format('YYYY-MM-DD')){
-        let sql = `select trend, exchange, segment, symbol, coalesce(security_id, '') as security, leg, status, trigger_price as trigger,
+    async findOrderSummary(strategy,date){
+        let sql = `select alert_id as strategy, to_char(order_dt,'yyyy-mm-dd') as order_date, trend, exchange, segment, symbol, coalesce(security_id, '') as security, leg, status, trigger_price as trigger,
                 sum(order_qty) as qty, avg(traded_price) as price 
-                    from orders where alert_id = ${strategy}`;
+                    from orders where `;
         if(date == undefined)
-            sql += ` and date(order_dt) = current_date`;
+            sql += ` date(order_dt) = current_date`;
         else
-            sql += ` and date(order_dt) = '${date}'`;
-        sql += ` group by trend, exchange, segment, symbol, security, leg, status, order_dt, order_qty, traded_price, trigger_price
+            sql += ` date(order_dt) = '${date}'`;
+        sql += ` group by alert_id, order_dt, trend, exchange, segment, symbol, security, leg, status, order_qty, traded_price, trigger_price
                     order by trend, symbol, status desc`;
        
-        const orders = await this.manager.query(sql);
-        const summary = {bullish: [], bearish: []}
-        orders.filter(o => o.leg == 'MAIN' && o.status == 'TRADED').forEach(order => {
-        // orders.filter(o => o.status == 'TRADED').forEach(order => {    
-            const {trend,symbol,exchange, segment,order_type,security,qty,price,trigger} = order;
+        const trades = await this.manager.query(sql);
+
+        const summary:{strategy:string,orders:{date:string,bullish:any[],bearish:any[]}}[] = [];
+
+        trades.filter(o => o.leg == 'MAIN' && o.status == 'TRADED').forEach(order => {
+            const {strategy,trend,symbol,exchange, segment,order_date,security,qty,price,trigger} = order;
+            const found = summary.find(st => st.strategy == strategy);
+            const orderSummary = {symbol,exchange,segment,security,qty,balance:qty,price,trigger};
             if(trend == 'Bullish'){ 
-                //if already exists add qty
-                summary.bullish.push({symbol,exchange,segment,security,qty,balance:qty,price,trigger})
+                found ? found['orders'].bullish.push(orderSummary) : 
+                    summary.push({strategy,orders:{date:order_date,bullish:[orderSummary],bearish:[]}});
             }
             if(trend == 'Bearish'){ 
-                summary.bearish.push({symbol,exchange,segment,security,qty,balance:qty,price,trigger})
+                found ? found['orders'].bearish.push(orderSummary) : 
+                    summary.push({strategy,orders:{date:order_date,bullish:[],bearish:[orderSummary]}});
             }
         });
-
-        summary.bullish.forEach(bull => {
-            const found = orders.find(o => o.trend=='Bullish' && o.symbol == bull.symbol && o.leg == 'SL');
-            if(found){
-                if(found['status']=='TRADED'){
-                    bull['balance'] -= found['qty'];
-                    bull['exit'] = found['price'];
-                }
-                bull['trigger'] = found['trigger'];
-            }
-        });
-
-        summary.bearish.forEach(bear => {
-            const found = orders.find(o => o.trend=='Bearish' && o.symbol == bear.symbol && o.leg == 'SL');
-            if(found){
-                if(found['status']=='TRADED'){
-                    bear['balance'] -= found['qty'];
-                    bear['exit'] = found['price'];
-                }
-                bear['trigger'] = found['trigger'];
-            }
+        
+        summary.forEach(st => {
+            const {strategy} = st;
+            const {date} = st['orders'];
+            this.updateOrderBalance(trades, st['orders']['bullish'], strategy,date,'Bullish');
+            this.updateOrderBalance(trades, st['orders']['bearish'], strategy,date,'Bearish');
         });
         
         return summary;
     }
+
+    updateOrderBalance(trades, orders, strategy,date,trend){
+        orders.forEach(order => {
+            const found = trades.find(o => o.strategy == strategy && o.order_date == date && 
+                o.trend == trend && o.symbol == order.symbol && o.leg == 'SL');
+            if(found){
+                if(found['status']=='TRADED'){
+                    order['balance'] -= +found['qty'];
+                    order['exit'] = found['price'];
+                }
+                order['trigger'] = found['trigger'];
+            }
+        });
+    }
+
 }

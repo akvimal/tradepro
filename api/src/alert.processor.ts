@@ -1,10 +1,10 @@
 import { Inject, Injectable, LoggerService } from "@nestjs/common";
 import * as moment from 'moment-timezone';
 import { AlertService } from "./alert.service";
-import { OrderService } from "./order.service";
 import { RabbitMQService } from "./common/rabbitmq.service";
 import { AccountService } from "./account.service";
 import { MasterService } from "./master.service";
+import { OrdersService } from "./modules/orders/orders.service";
 
 @Injectable()
 export class AlertProcessor {
@@ -12,7 +12,7 @@ export class AlertProcessor {
     constructor (private readonly mqService: RabbitMQService,
         private readonly alertService:AlertService, 
         private readonly accountService: AccountService,
-        private readonly orderService:OrderService,
+        private readonly orderService:OrdersService,
         private readonly masterService:MasterService){}
 
     async process(content: any) {
@@ -20,7 +20,7 @@ export class AlertProcessor {
         console.log(content);
         const {alertid,direction,provider,stocks,trigger_prices} = content;
         if(provider === 'chartink'){
-            const alert = (await this.alertService.findOne(alertid))[0];
+            const alert = await this.alertService.findOne(alertid);
             const {exchange,segment,instrument} = alert['config'];
 
             if(alert && alert.active){
