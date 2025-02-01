@@ -1,15 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { ApiService } from './api.service';
 import { AppConfigService } from './common/app-config.service';
+import { WebSocketService } from './common/websocket.service';
 
 @Injectable()
 export class DhanService {
 
   constructor(private readonly apiService: ApiService, 
-    private readonly appConfigService:AppConfigService) {}
+    private readonly appConfigService:AppConfigService,private wsService:WebSocketService) {}
 
   async getLtp(payload){
-    // console.log('LTP Request: ',JSON.stringify(payload));
+    console.log('LTP Request: ',JSON.stringify(payload));
     
     const partner = await this.appConfigService.getPartnerInfo('Dhan');
     const {access_token,client_id,api_url} = partner['config'];
@@ -20,10 +21,35 @@ export class DhanService {
       const result = [];
       const secs = Object.values(response['data']['data']);
 
+      console.log('secs',secs);
+      
+      if(secs.length > 0)
       for (const [key, value] of Object.entries(secs[0])) {
         result.push({security:key,price:value['last_price']})
       }
       return result;
+  }
+
+  //types : ticker,quote,full,20level
+  async subscribeFeed(type,securities){
+    const list = []
+    if(securities && securities.length > 0){
+      securities.forEach(sec => {
+        list.push({ExchangeSegment:`${sec.exchange}_${sec.segment}`,SecurityId:sec.security})  
+      });
+    }
+    await this.wsService.sendMessage({RequestCode : 15, InstrumentList: list});
+  }
+
+  
+  unsubscribeFeed(type,securities){
+    const list = []
+    if(securities && securities.length > 0){
+      securities.forEach(sec => {
+        list.push({ExchangeSegment:`${sec.exchange}_${sec.segment}`,SecurityId:sec.security})  
+      });
+    }
+    this.wsService.sendMessage({RequestCode : 15, InstrumentList: list});
   }
 
 }

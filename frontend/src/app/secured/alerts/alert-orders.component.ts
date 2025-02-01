@@ -31,7 +31,6 @@ export class AlertOrdersComponent {
         this.wsService.receiveMessages().subscribe((message) => {
             const {type,security,ltp} = message;
             if(message && type == 'PRICE') {
-
                 this.orders.bullish && this.orders.bullish.forEach((s:any) => {
                     if(s.security == security) {
                         s['ltp'] =  s.balance > 0 ? ltp : s['exit'];
@@ -93,6 +92,8 @@ export class AlertOrdersComponent {
 
     squareOff(type:string,security:string){
         const request = this.buildSquareOffRequest(type,security);
+        console.log('Square off: ',request);
+        
         request.length > 0 && this.service.squareOff(this.buildSquareOffRequest(type,security));
     }
 
@@ -111,8 +112,10 @@ export class AlertOrdersComponent {
         const temp = orders[type.toLowerCase()];
         temp.forEach((order:any) => {
             const {exchange,segment,security} = order;
-            if((secId !== '' && security == secId) || secId == '')
-            req.push({strategy:this.alertid,exchange,segment,security});
+            if((secId !== '' && security == secId) || secId == ''){
+                if(!req.find(o => o.security == security))
+                    req.push({strategy:this.alertid,type:(type == 'Bullish'?'SELL':'BUY'),exchange,segment,security});
+            }
         });
     }
 

@@ -7,6 +7,7 @@
         <button (click)="squareOff('Bullish','')">Sqr</button>
         <table width="100%">
             <tr>
+                <th>Time</th>
                 <th>Security</th>
                 <th>Qty</th>
                 <th>Entry</th>
@@ -14,7 +15,7 @@
                 <th>Exit</th>
             </tr>
             <tr *ngFor="let o of orders.bullish" [ngStyle]="{background: o.balance > 0 ? 'inherit' : '#d5dbdb'}">
-                <td>{{o.symbol}}</td>
+                <td>{{o.time}}</td><td>{{o.symbol}}</td>
                 <td>{{o.qty}}</td>
                 <td>{{o.price | number : '1.1-2'}}</td>
                 <td>{{o.trigger | number : '1.1-2'}} ({{o.sl_pcnt|percent:'0.1-1'}}) <div *ngIf="o.balance > 0">

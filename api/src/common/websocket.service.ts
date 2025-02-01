@@ -3,13 +3,17 @@ import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { AlertGateway } from 'src/alert.gateway';
 import * as WebSocket from 'ws';
 import { AppConfigService } from './app-config.service';
+import { RabbitMQService } from './rabbitmq.service';
+import { PriceConsumer } from 'src/modules/prices/price.consumer';
 
 @Injectable()
 export class WebSocketService implements OnModuleInit, OnModuleDestroy {
 
   private ws: WebSocket;
 
-  constructor(private gateway:AlertGateway, private appConfigService:AppConfigService){}
+  constructor(private gateway: AlertGateway, 
+    private readonly mqService: RabbitMQService, 
+    private appConfigService: AppConfigService){}
 
   onModuleInit() {
     //TODO: move opening socket to background task and open or close based on the exchange time window
@@ -35,7 +39,11 @@ export class WebSocketService implements OnModuleInit, OnModuleDestroy {
 
     this.ws.on('message',async (data) => {
         const price = this.parseBinaryData(data, 'LTP');
-        // console.log(price);
+        console.log('price from server',price);
+        
+        if(price)
+          await this.mqService.publishMessage(PriceConsumer.PRICE_QUEUE, price).catch(error => console.log(error));  
+
         await this.gateway.publishData({type:'PRICE', ...price});
     });
 

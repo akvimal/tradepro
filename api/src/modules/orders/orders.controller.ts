@@ -13,8 +13,8 @@ export class OrdersController {
 
   @Post('/summary')
   async findOrderByAlert(@Body() payload:any) {
-    const {strategy,date} = payload;
-   return await this.service.getOrderSummary(strategy,date); 
+    const {date} = payload;
+   return await this.service.getOrderSummary(date); 
   }
 
   @Post()

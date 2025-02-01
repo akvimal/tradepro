@@ -26,6 +26,11 @@ import { OrderConsumer } from './modules/orders/order.consumer';
 import { OrderProcessor } from './modules/orders/order.processor';
 import { OrdersRepo } from './modules/orders/orders.repo';
 import { OrdersService } from './modules/orders/orders.service';
+import { ScheduleModule } from '@nestjs/schedule';
+import { WatchmanService } from './watchman.service';
+import { PriceConsumer } from './modules/prices/price.consumer';
+import { PriceProcessor } from './modules/prices/price.processor';
+import { PriceService } from './modules/prices/price.service';
 
 @Module({
   imports: [ ConfigModule.forRoot({
@@ -34,22 +39,13 @@ import { OrdersService } from './modules/orders/orders.service';
   }), TypeOrmModule.forRootAsync({
     useClass: TypeOrmConfigService,
   }),TypeOrmModule.forFeature([]),
-HttpModule],
+HttpModule,
+ScheduleModule.forRoot()],
   controllers: [SignalController,TrendController,AlertController,FeedController,OrdersController],
-  providers: [RabbitMQService, AppConfigService, WebSocketService, AlertGateway, ApiService, DhanService, 
-    OrdersService, OrdersRepo, OrderProcessor, OrderConsumer, 
+  providers: [WatchmanService, WebSocketService,RabbitMQService, AppConfigService, AlertGateway, ApiService, DhanService, 
+    OrdersService, OrdersRepo, OrderProcessor, OrderConsumer,
     MasterService, 
     AlertConsumer, AlertProcessor, AlertService,
-    TrendService,  FeedService,  AccountService],
+    TrendService,  FeedService,  AccountService, PriceConsumer,PriceProcessor,PriceService],
 })
-export class AppModule implements OnModuleInit {
-
-  async onModuleInit() {
-    console.log('App Module Initialized');
-    // setInterval(() => {
-    //   console.log('heart beat to square off or adjust SL');
-      
-    // }, 1000);
-  }
-
-}
+export class AppModule {}

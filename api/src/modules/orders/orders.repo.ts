@@ -58,9 +58,15 @@ export class OrdersRepo {
         }
     }
 
-    async getPendingSlLeg(alertid, security){
-        const sql = `select * from orders where alert_id = ${alertid} and leg = 'SL' and status = 'PENDING' 
+    async getPendingSlLeg(alertid, type, exchange, segment, security){
+        const sql = `select * from orders where exchange = '${exchange}' and segment = '${segment}' 
+                and alert_id = ${alertid} and order_type = '${type}' and leg = 'SL' and status = 'PENDING' 
                 and security_id = '${security}'`;
+        return await this.manager.query(sql);
+    }
+
+    async getPendingExchangeIntradayOrders(exchange){
+        const sql = `select exchange, segment, security_id as security, alert_id as strategy from orders where exchange = '${exchange}' and leg = 'SL' and status = 'PENDING' and date(order_dt) = current_date`;
         return await this.manager.query(sql);
     }
 
@@ -86,8 +92,9 @@ export class OrdersRepo {
         return await this.manager.query(sql);
     }
 
-    async findOrderSummary(strategy,date){
-        let sql = `select alert_id as strategy, to_char(order_dt,'yyyy-mm-dd') as order_date, trend, exchange, segment, symbol, coalesce(security_id, '') as security, leg, status, trigger_price as trigger,
+    async findOrderSummary(date){
+        let sql = `select alert_id as strategy, to_char(order_dt,'yyyy-mm-dd') as order_date,
+        to_char(order_dt,'HH24:MI') as order_time, trend, exchange, segment, symbol, coalesce(security_id, '') as security, leg, status, trigger_price as trigger,
                 sum(order_qty) as qty, avg(traded_price) as price 
                     from orders where `;
         if(date == undefined)
@@ -95,16 +102,16 @@ export class OrdersRepo {
         else
             sql += ` date(order_dt) = '${date}'`;
         sql += ` group by alert_id, order_dt, trend, exchange, segment, symbol, security, leg, status, order_qty, traded_price, trigger_price
-                    order by trend, symbol, status desc`;
+                    order by order_dt, trend, symbol, status `;
        
         const trades = await this.manager.query(sql);
 
         const summary:{strategy:string,orders:{date:string,bullish:any[],bearish:any[]}}[] = [];
 
         trades.filter(o => o.leg == 'MAIN' && o.status == 'TRADED').forEach(order => {
-            const {strategy,trend,symbol,exchange, segment,order_date,security,qty,price,trigger} = order;
+            const {strategy,trend,symbol,exchange, segment,order_date,order_time,security,qty,price,trigger} = order;
             const found = summary.find(st => st.strategy == strategy);
-            const orderSummary = {symbol,exchange,segment,security,qty,balance:qty,price,trigger};
+            const orderSummary = {symbol,time:order_time,exchange,segment,security,qty,balance:qty,price,trigger};
             if(trend == 'Bullish'){ 
                 found ? found['orders'].bullish.push(orderSummary) : 
                     summary.push({strategy,orders:{date:order_date,bullish:[orderSummary],bearish:[]}});
@@ -127,7 +134,7 @@ export class OrdersRepo {
 
     updateOrderBalance(trades, orders, strategy,date,trend){
         orders.forEach(order => {
-            const found = trades.find(o => o.strategy == strategy && o.order_date == date && 
+            const found = trades.find(o => o.strategy == strategy && o.order_date == date && o.order_time == order['time'] && 
                 o.trend == trend && o.symbol == order.symbol && o.leg == 'SL');
             if(found){
                 if(found['status']=='TRADED'){
