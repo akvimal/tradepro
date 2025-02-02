@@ -1,31 +1,28 @@
 import { Injectable } from '@nestjs/common';
 import { ApiService } from './api.service';
-import { AppConfigService } from './common/app-config.service';
-import { WebSocketService } from './common/websocket.service';
+import { WebSocketService } from './websocket.service';
 
 @Injectable()
 export class DhanService {
 
-  constructor(private readonly apiService: ApiService, 
-    private readonly appConfigService:AppConfigService,private wsService:WebSocketService) {}
+  constructor(
+    private apiService: ApiService, 
+    private wsService:WebSocketService) {}
 
-  async getLtp(payload){
+  async getLtp(payload,partner){
     console.log('LTP Request: ',JSON.stringify(payload));
-    
-    const partner = await this.appConfigService.getPartnerInfo('Dhan');
     const {access_token,client_id,api_url} = partner['config'];
-    const response = await this.apiService.postData(`${api_url}/marketfeed/ltp`,payload,{
+    const response = await this.apiService.postData(`${api_url}/marketfeed/ltp`, payload,{
         'access-token': access_token,
         'client-id': client_id
       });
       const result = [];
       const secs = Object.values(response['data']['data']);
-
-      console.log('secs',secs);
       
       if(secs.length > 0)
       for (const [key, value] of Object.entries(secs[0])) {
-        result.push({security:key,price:value['last_price']})
+        const price = Math.round(value['last_price']*100)/100;
+        result.push({security:key,price})
       }
       return result;
   }

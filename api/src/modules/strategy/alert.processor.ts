@@ -1,19 +1,20 @@
 import { Inject, Injectable, LoggerService } from "@nestjs/common";
 import * as moment from 'moment-timezone';
 import { AlertService } from "./alert.service";
-import { RabbitMQService } from "./common/rabbitmq.service";
-import { AccountService } from "./account.service";
-import { MasterService } from "./master.service";
-import { OrdersService } from "./modules/orders/orders.service";
+import { RabbitMQService } from "../common/rabbitmq.service";
+import { AccountService } from "../accounts/account.service";
+import { OrdersService } from "../orders/orders.service";
+import { MasterService } from "../common/master.service";
 
 @Injectable()
 export class AlertProcessor {
     
     constructor (private readonly mqService: RabbitMQService,
-        private readonly alertService:AlertService, 
+        private readonly alertService: AlertService, 
         private readonly accountService: AccountService,
-        private readonly orderService:OrdersService,
-        private readonly masterService:MasterService){}
+        private readonly orderService: OrdersService,
+        private readonly masterService: MasterService
+    ){}
 
     async process(content: any) {
         // console.log(`alert processing ...`);
@@ -91,6 +92,7 @@ export class AlertProcessor {
                     order_type: trade,
                     traded_price: price,
                     order_qty: qty, 
+                    trail: false,
                     status: alert['virtual'] ? 'TRADED' : 'NEW',
                     entry_type: limit == undefined ? 'MARKET' : 'LIMIT',
                     
@@ -103,6 +105,7 @@ export class AlertProcessor {
                     order_type: trade === 'BUY' ? 'SELL' : 'BUY',
                     trigger_price: price * (trade === 'BUY' ? (1 - sldiff) : (1 + sldiff)),
                     order_qty: qty, 
+                    trail: o['limit']['trail'] ? true : false,
                     status: alert['virtual'] ? 'PENDING' : 'NEW',
                     entry_type: limit == undefined ? 'MARKET' : 'LIMIT'
                 });

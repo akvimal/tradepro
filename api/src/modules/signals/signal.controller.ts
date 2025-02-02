@@ -1,10 +1,9 @@
 import { Body, Controller, Get, Inject, LoggerService, Param, Post, Res, UseGuards} from '@nestjs/common';
-import { AlertGateway } from './alert.gateway';
-import { AlertService } from './alert.service';
 import * as moment from 'moment-timezone';
-import { RabbitMQService } from './common/rabbitmq.service';
-import { AlertConsumer } from './alert.consumer';
+import { AlertGateway } from '../common/alert.gateway';
+import { RabbitMQService } from '../common/rabbitmq.service';
 import { TrendService } from './trend.service';
+import { Constants } from '../common/constants';
 
 @Controller('signal')
 export class SignalController {
@@ -26,10 +25,10 @@ export class SignalController {
         await this.trendService.save(alertid, direction, this.getTimestampWithTime(payload['triggered_at']), payload.stocks);
         
         console.log('publishing alert to gateway');
-        await this.gateway.publishData({type:'SIGNAL',alertid,payload});
+        await this.gateway.publishData({type:Constants.FEED_SIGNAL,alertid,payload});
         
         console.log('publishing alert to mq');
-        await this.mqService.publishMessage(AlertConsumer.ALERT_QUEUE, {...payload,alertid,direction,provider}).catch(error => console.log(error));  
+        await this.mqService.publishMessage(Constants.QUEUE_SIGNAL, {...payload,alertid,direction,provider}).catch(error => console.log(error));  
     } catch (error) {
       console.log(error);
     }

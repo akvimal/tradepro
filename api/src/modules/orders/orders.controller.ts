@@ -1,15 +1,20 @@
 import { Body, Controller, Get, Inject, LoggerService, Param, Post, Res, UseGuards} from '@nestjs/common';
 import { OrdersService } from './orders.service';
-import { RabbitMQService } from 'src/common/rabbitmq.service';
-import { AlertGateway } from 'src/alert.gateway';
-import { AccountService } from 'src/account.service';
+import { RabbitMQService } from 'src/modules/common/rabbitmq.service';
+import { AlertGateway } from 'src/modules/common/alert.gateway';
+import { AccountService } from 'src/modules/accounts/account.service';
+import { Constants } from '../common/constants';
 
 
 @Controller('orders')
 export class OrdersController {
 
-  constructor(private readonly mqService: RabbitMQService, private gateway:AlertGateway,
-    private service:OrdersService, private accountService:AccountService) {}
+  constructor(
+    private readonly mqService: RabbitMQService, 
+    private readonly gateway:AlertGateway,
+    private readonly service:OrdersService, 
+    // private readonly accountService:AccountService
+  ) {}
 
   @Post('/summary')
   async findOrderByAlert(@Body() payload:any) {
@@ -24,9 +29,9 @@ export class OrdersController {
 
   @Post('/sqroff')
   async squareOff(@Body() orders:any) {
-    console.log('orders received to square:',orders);
+    // console.log('orders received to square:',orders);
     
-   return await this.mqService.publishMessage('orderQueue', {type:'CLOSE',orders}).catch(error => console.log(error));
+   return await this.mqService.publishMessage(Constants.QUEUE_ORDER, {type:Constants.ORDER_CLOSE,orders}).catch(error => console.log(error));
   }
 
 

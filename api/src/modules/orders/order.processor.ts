@@ -1,13 +1,17 @@
 import { Inject, Injectable, LoggerService } from "@nestjs/common";
+
+import { AlertGateway } from "src/modules/common/alert.gateway";
 import { OrdersService } from "./orders.service";
-import { AlertGateway } from "src/alert.gateway";
-import { PriceService } from "../prices/price.service";
+import { PriceService } from "src/modules/price/price.service";
 
 @Injectable()
 export class OrderProcessor {
     
-    constructor (private gateway:AlertGateway,
-        private readonly orderService:OrdersService, private readonly priceService:PriceService){}
+    constructor (
+        private gateway:AlertGateway,
+        private readonly orderService:OrdersService,
+        // private readonly priceService:PriceService
+    ){}
 
     async process(request: any) {
         const {type,orders} = request;
@@ -18,19 +22,23 @@ export class OrderProcessor {
 
         if(type == 'NEW'){
             await this.orderService.placeOrder(orders);
-            // orders.forEach(async order => {
-            //     console.log('subscribng to tcker ',order['symbol']);
-                
-            //     await this.priceService.subscribeTickerFeed('TICKER',order['exchange'],order['segment'],
-            //         order['security_id']);
-            // });
         }
         
-        else if(type == 'CLOSE')
+        else if(type == 'CLOSE'){
+            // const priceList = await this.priceService.getLtp(orders);
             await this.orderService.squareOff(orders);
+        }
         
-        const summary = await this.orderService.getOrderSummary();
-        await this.gateway.publishData({type:'ORDER',payload:summary});
+        setTimeout(async () => { //Hack
+            const summary = await this.orderService.getOrderSummary();
+            await this.gateway.publishData({type:'ORDER',payload:summary});    
+        }, 100);
+  
+    }
+
+    async handlePriceFeed(content){
+        
+        await this.orderService.handlePriceChange(content['security'],content['ltp']);
 
     }
 

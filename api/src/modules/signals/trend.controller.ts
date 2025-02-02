@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Inject, LoggerService, Param, Post, Res, UseGuards} from '@nestjs/common';
 import { TrendService } from './trend.service';
-import { AlertService } from './alert.service';
+import { AlertService } from '../strategy/alert.service';
 
 @Controller('trend')
 export class TrendController {

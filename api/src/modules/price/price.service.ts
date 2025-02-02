@@ -1,15 +1,21 @@
 import { Injectable } from "@nestjs/common";
-import { DhanService } from "src/dhan.service";
+import { DhanService } from "src/modules/common/dhan.service";
+import { AppConfigService } from "../common/app-config.service";
+import { OrdersService } from "../orders/orders.service";
 
 @Injectable()
 export class PriceService {
 
     list = [];
 
-    constructor (private dhanService:DhanService) {}
+    constructor (private readonly dhanService: DhanService,
+      private readonly appConfigService: AppConfigService,
+      // private readonly orderService: OrdersService
+    ) {}
 
     async getLtp(orders){
-      return await this.dhanService.getLtp(this.buildLtpBulkRequest(orders));
+      const partner = await this.appConfigService.getPartnerInfo('Dhan');
+      return await this.dhanService.getLtp(this.buildLtpBulkRequest(orders),partner);
     }
 
     buildLtpBulkRequest(orders){//TODO: this can be moved to partner impl
@@ -44,4 +50,11 @@ export class PriceService {
 
     }
 
+    adjustSL(security,ltp){
+      
+    }
+
+  //   async handlePriceChange(security,ltp){
+  //     await this.orderService.handlePriceChange(security,ltp);
+  // }
 }

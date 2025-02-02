@@ -1,24 +1,25 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { OrderProcessor } from './modules/orders/order.processor';
 import * as moment from 'moment';
+import { OrderProcessor } from './modules/orders/order.processor';
 import { OrdersService } from './modules/orders/orders.service';
-import { PriceService } from './modules/prices/price.service';
+import { PriceService } from './modules/price/price.service';
 
 @Injectable()
-export class WatchmanService {
-  private readonly logger = new Logger(WatchmanService.name);
+export class BackgroundService {
+  
+  private readonly logger = new Logger(BackgroundService.name);
 
-  exchanges = [{exchange:'NSE',active:false,squareoff:false,session:{open:'18:07',close:'20:00'},intraday:{squareoff:'18:52'}}]
+  exchanges = [{exchange:'NSE',active:false,squareoff:false,session:{open:'17:07',close:'20:00'},intraday:{squareoff:'17:55'}}]
 
-  constructor(private readonly orderProcessor:OrderProcessor,private readonly orderService:OrdersService,
+  constructor(private readonly orderProcessor:OrderProcessor,
+    private readonly orderService:OrdersService,
     private readonly priceService:PriceService
   ){}
 
   @Cron(CronExpression.EVERY_MINUTE)
   // @Cron(CronExpression.EVERY_5_SECONDS)
   async hearBeat() {
-    
     const exch = this.exchanges.find(ex => ex['exchange'] == 'NSE')
     const {exchange,squareoff,session,intraday} = exch;
     const timeNow = moment().format('HH:mm');

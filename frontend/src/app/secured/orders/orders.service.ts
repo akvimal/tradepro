@@ -67,6 +67,9 @@ export class OrderService {
                 s['change_valu'] = s['exit'] - +s['price'];
                 s['change_pcnt'] = (s['exit'] - +s['price'])/+s['price'];
             }
+            //TODO: thre is a bug with SL calculation, as trigger price is 
+            // not available on first instance of order creation, due to asynronously creating SL leg
+            
             s['sl_pcnt'] = (+s['trigger'] - s['price'])/+s['price'];
         });
         orders.bearish && orders.bearish.forEach((s:any) => {

@@ -3,13 +3,13 @@ import { Inject, Injectable, LoggerService, OnModuleInit } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config';
 import amqp, { ChannelWrapper } from 'amqp-connection-manager';
 import { ConfirmChannel } from 'amqplib';
+import { Constants } from '../common/constants';
 import { AlertProcessor } from './alert.processor';
 
 @Injectable()
 export class AlertConsumer implements OnModuleInit{
 
   private channelWrapper: ChannelWrapper;
-  static ALERT_QUEUE = 'alertQueue';
 
   constructor(private readonly configService:ConfigService, 
     private readonly processor: AlertProcessor) {
@@ -22,11 +22,11 @@ export class AlertConsumer implements OnModuleInit{
   public async onModuleInit() {
     try {
       await this.channelWrapper.addSetup(async (channel: ConfirmChannel) => {
-        await channel.assertQueue(AlertConsumer.ALERT_QUEUE);
-        await channel.consume(AlertConsumer.ALERT_QUEUE, async (message) => {
+        await channel.assertQueue(Constants.QUEUE_SIGNAL);
+        await channel.consume(Constants.QUEUE_SIGNAL, async (message) => {
           if (message) {
             const content = JSON.parse(message.content.toString());
-            console.log(`Received ${content}`);
+            // console.log(`Received ${content}`);
             this.processor.process(content);
             channel.ack(message);
           }

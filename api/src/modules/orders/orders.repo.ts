@@ -20,6 +20,7 @@ export class OrdersRepo {
         cols.push('order_qty');
         cols.push('status');
         cols.push('trend');
+        cols.push('trail');
         cols.push('entry_type');
         cols.push('delivery_type');
         cols.push('leg');
@@ -41,6 +42,7 @@ export class OrdersRepo {
         vals.push(`${payload.order_qty}`);
         vals.push(`'${payload.status}'`);
         vals.push(`'${payload.trend}'`);
+        vals.push(`${payload.trail}`);
         vals.push(`'${payload.entry_type}'`);
         vals.push(`'${payload.delivery_type}'`);
         vals.push(`'${payload.leg}'`);
@@ -62,6 +64,22 @@ export class OrdersRepo {
         const sql = `select * from orders where exchange = '${exchange}' and segment = '${segment}' 
                 and alert_id = ${alertid} and order_type = '${type}' and leg = 'SL' and status = 'PENDING' 
                 and security_id = '${security}'`;
+        return await this.manager.query(sql);
+    }
+
+    async getTrailSlLeg(security){
+        const sql = `select o.id, o.alert_id as strategy, o.symbol, o.trigger_price,  o.order_qty, o.order_type as type, a.config, o.trail  
+        from orders o 
+        inner join alerts a on a.id = o.alert_id 
+        where leg = 'SL' and status = 'PENDING' and security_id = '${security}'`;
+        return await this.manager.query(sql);
+    }
+
+    async updateSLTrail(strategy,security,price){
+        const sql = `update orders set trigger_price = ${price} where alert_id = ${strategy} 
+        and security_id = '${security}' 
+        and leg = 'SL' 
+        and status = 'PENDING'`;
         return await this.manager.query(sql);
     }
 

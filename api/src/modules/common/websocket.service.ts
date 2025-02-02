@@ -1,19 +1,20 @@
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 
-import { AlertGateway } from 'src/alert.gateway';
+import { AlertGateway } from 'src/modules/common/alert.gateway';
 import * as WebSocket from 'ws';
 import { AppConfigService } from './app-config.service';
 import { RabbitMQService } from './rabbitmq.service';
-import { PriceConsumer } from 'src/modules/prices/price.consumer';
+import { Constants } from './constants';
 
 @Injectable()
 export class WebSocketService implements OnModuleInit, OnModuleDestroy {
 
   private ws: WebSocket;
 
-  constructor(private gateway: AlertGateway, 
+  constructor(
+    private readonly gateway: AlertGateway, 
     private readonly mqService: RabbitMQService, 
-    private appConfigService: AppConfigService){}
+    private readonly appConfigService: AppConfigService){}
 
   onModuleInit() {
     //TODO: move opening socket to background task and open or close based on the exchange time window
@@ -28,7 +29,7 @@ export class WebSocketService implements OnModuleInit, OnModuleDestroy {
     const partner = await this.appConfigService.getPartnerInfo('Dhan');
     const {access_token,client_id,feed_url} = partner['config'];
     const endpoint = `${feed_url}&token=${access_token}&clientId=${client_id}&authType=2`;
-    
+
     this.ws = new WebSocket(endpoint);
     console.log('connecting to DHAN market feed socket ...');
     
@@ -42,9 +43,9 @@ export class WebSocketService implements OnModuleInit, OnModuleDestroy {
         console.log('price from server',price);
         
         if(price)
-          await this.mqService.publishMessage(PriceConsumer.PRICE_QUEUE, price).catch(error => console.log(error));  
+          await this.mqService.publishMessage(Constants.QUEUE_PRICE, price).catch(error => console.log(error));  
 
-        await this.gateway.publishData({type:'PRICE', ...price});
+        await this.gateway.publishData({type:Constants.FEED_PRICE, ...price});
     });
 
     this.ws.on('error', (err) => {
@@ -58,7 +59,7 @@ export class WebSocketService implements OnModuleInit, OnModuleDestroy {
   }
 
   sendMessage(message: any) {
-    console.log('received message for socket',message);
+    // console.log('received message for socket',message);
     
     if (this.ws.readyState === WebSocket.OPEN) {
       this.ws.send(JSON.stringify(message));
@@ -89,7 +90,7 @@ export class WebSocketService implements OnModuleInit, OnModuleDestroy {
 
         // console.log(`${securityId}: ${lastTradedPrice}`);
       if(feed == 'LTP' && lastTradeTime > 0){
-        return {security:securityId,ltp:lastTradedPrice}
+        return {security:securityId,ltp:(Math.round(lastTradedPrice*100)/100)}
       }
       
     }
