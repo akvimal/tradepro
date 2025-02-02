@@ -9,6 +9,8 @@ import { MasterService } from "../common/master.service";
 @Injectable()
 export class AlertProcessor {
     
+    expiry = ["2025-02-27","2025-03-27","2025-04-24"]
+
     constructor (private readonly mqService: RabbitMQService,
         private readonly alertService: AlertService, 
         private readonly accountService: AccountService,
@@ -22,7 +24,7 @@ export class AlertProcessor {
         const {alertid,direction,provider,stocks,trigger_prices} = content;
         if(provider === 'chartink'){
             const alert = await this.alertService.findOne(alertid);
-            const {exchange,segment,instrument} = alert['config'];
+            const {exchange,segment,instrument,option,intraday} = alert['config'];
 
             if(alert && alert.active){
                 
@@ -40,23 +42,48 @@ export class AlertProcessor {
                         const symbol = symbols[index];
                         const price = prices[index];
                         console.log(`processing alert for ${symbol} at ${price}`);
+                        //TODO: check the instrument
+                        let orders = [];
                         let proceed = true;
-                        const exOrders = await this.orderService.findOrders(symbol, alert.id);
-                        // console.log(exOrders);
-                        if(exOrders.length > 0){
-                            let bought = 0, sold = 0;
-                            // console.log(`existing orders found for ${symbol}`);
-                            exOrders.filter(o => o['order_type'] === 'BUY' && o['status'] == 'TRADED').map(o => bought += o['order_qty']);
-                            exOrders.filter(o => o['order_type'] === 'SELL' && o['status'] == 'TRADED').map(o => sold += o['order_qty']);
-                            proceed = (bought - sold) === 0;
+                        if(instrument.startsWith('OPT')){
+                            const {type,position,lots,moneyness} = option;
+
+                            orders = await this.orderService.findOrderBySecurity(alert.id,symbol,position,intraday!==undefined);
+
+                            
+
+                        } else {
+                            
+                            orders = await this.orderService.findOrders(symbol, alert.id);
                         }
-                        // for same direction signal and unsold order qty exists for the day, then ignore
-                        // for opposite direction signal and unsold order qty exists for the day, then square off (update SL leg to market)
-                        if(proceed){
-                            const secInfo = (await this.masterService.findSecurityInfo(exchange,segment,symbol))[0];
-                            const orders = this.buildOrderRequest(alert, account['balance'], direction, symbol, secInfo['security_id'], price);
-                            await this.mqService.publishMessage('orderQueue', {type:'NEW',orders}).catch(error => console.log(error));  
-                        }
+                            // console.log(exOrders);
+                            if(orders.length > 0){
+                                let bought = 0, sold = 0;
+                                // console.log(`existing orders found for ${symbol}`);
+                                orders.filter(o => o['order_type'] === 'BUY' && o['status'] == 'TRADED').map(o => bought += o['order_qty']);
+                                orders.filter(o => o['order_type'] === 'SELL' && o['status'] == 'TRADED').map(o => sold += o['order_qty']);
+                                proceed = (bought - sold) === 0;
+                            }
+                            // for same direction signal and unsold order qty exists for the day, then ignore
+                            // for opposite direction signal and unsold order qty exists for the day, then square off (update SL leg to market)
+                            if(proceed){
+                                if(instrument.startsWith('OPT')){
+                                    const {type,position,lots,moneyness} = option;
+                                    const secInfo = (await this.masterService.getOptionSecurityId(exchange,
+                                        segment, symbol, this.expiry[0], price, type, moneyness < 0));
+                                    
+                                    const secId = secInfo[Math.abs(moneyness)-1]['security_id'];
+                                    const qtyPerLot = secInfo[Math.abs(moneyness)-1]['lot_size'];
+                                    //determine the qty based on the config (in multiple of lot size)
+                                }
+                                else {
+                                    const secInfo = (await this.masterService.findSecurityInfo(exchange,segment,symbol))[0];
+                                    //determine the qty based on the config
+                                    const orders = this.buildOrderRequest(alert, account['balance'], direction, symbol, secInfo['security_id'], price);
+                                    await this.mqService.publishMessage('orderQueue', {type:'NEW',orders}).catch(error => console.log(error));  
+                                }
+                            }
+                        
                     }
                 }
             }

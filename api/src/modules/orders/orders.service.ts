@@ -141,7 +141,11 @@ export class OrdersService {
         return await this.ordersRepo.adjustSL(security,price);
     }
 
-    async findOrders(symbol, alert_id, intraday = true){
-        return await this.ordersRepo.findOrders(symbol, alert_id, intraday);
+    async findOrders(symbol, strategyId, intraday = true){
+        return await this.ordersRepo.findOrders(symbol, strategyId, intraday);
+    }
+
+    async findOrderBySecurity(strategyId:number,symbol:string,position:string,intraday:boolean){
+        return await this.ordersRepo.findOrderBySecurity(strategyId,symbol,position,intraday);
     }
 }

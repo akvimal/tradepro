@@ -164,4 +164,10 @@ export class OrdersRepo {
         });
     }
 
+    async findOrderBySecurity(strategyId:number,symbol:string,position:string, intraday:boolean){
+        let sql = `select * from orders where alert_id = ${strategyId} and symbol = '${symbol}' and trans_type = '${position}'
+         and status in ('TRANSIT','PENDING','TRADED')`;
+        if(intraday) sql += ` and date(created_on) = current_date`;
+        return this.manager.query(sql);
+    }
 }
