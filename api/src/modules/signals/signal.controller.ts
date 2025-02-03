@@ -44,6 +44,7 @@ export class SignalController {
    
     // const timestamp = moment.tz(inputTime, 'DD-MM-YYYY h:mm a', 'Asia/Kolkata');
     timestamp = moment.utc(timestamp, format);
+    console.log(`timestamp: ${timestamp}`);
 
     // Convert to PostgreSQL timestamp format
     // return timestamp.format('YYYY-MM-DD HH:mm:ss');

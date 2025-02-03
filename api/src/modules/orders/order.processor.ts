@@ -18,7 +18,7 @@ export class OrderProcessor {
         // console.log('order processor request type:',type);
         
         if(type !== 'NEW'||type !== 'CLOSE')
-            console.log('UNKNOWN Order Request Type in Order Processor');
+            console.log(`UNKNOWN Order Request Type[${type}] in Order Processor`);
 
         if(type === 'NEW'){
             await this.orderService.placeOrder(orders);
