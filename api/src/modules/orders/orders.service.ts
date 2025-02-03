@@ -64,8 +64,8 @@ export class OrdersService {
         const newTriggerPrice = type == 'BUY' ? (ltp * (1-pcnt)) : (ltp * (1+pcnt));
         console.log(`pcnt: ${pcnt} trigger: ${newTriggerPrice}`);
         
-        if((type == 'BUY' && newTriggerPrice > trigger_price)||
-            (type == 'SELL' && newTriggerPrice < trigger_price))
+        if((type == 'BUY' && newTriggerPrice < trigger_price)||
+            (type == 'SELL' && newTriggerPrice > trigger_price))
             await this.ordersRepo.updateSLTrail(strategy,security,newTriggerPrice);
       });
       
