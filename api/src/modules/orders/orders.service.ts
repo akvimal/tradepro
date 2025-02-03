@@ -60,7 +60,7 @@ export class OrdersService {
         const sl = config['order'].find(c=> c.leg == 'SL');
         const pcnt = sl['limit']['pcnt']/100;
         const newTriggerPrice = type == 'BUY' ? (trigger_price * (1-pcnt)) : (trigger_price * (1+pcnt));
-        console.log(`pcnt: ${pcnt} trigger: ${newTriggerPrice}`);
+        // console.log(`pcnt: ${pcnt} trigger: ${newTriggerPrice}`);
         
         if((type == 'BUY' && ltp < newTriggerPrice)||
             (type == 'SELL' && ltp > newTriggerPrice))

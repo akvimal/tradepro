@@ -40,7 +40,7 @@ export class WebSocketService implements OnModuleInit, OnModuleDestroy {
 
     this.ws.on('message',async (data) => {
         const price = this.parseBinaryData(data, 'LTP');
-        console.log('price from server',price);
+        // console.log('price from server',price);
         
         if(price)
           await this.mqService.publishMessage(Constants.QUEUE_PRICE, price).catch(error => console.log(error));  

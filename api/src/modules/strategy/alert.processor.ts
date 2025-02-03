@@ -20,7 +20,7 @@ export class AlertProcessor {
 
     async process(content: any) {
         // console.log(`alert processing ...`);
-        console.log(content);
+        // console.log(content);
         const {alertid,direction,provider,stocks,trigger_prices} = content;
         if(provider === 'chartink'){
             const alert = await this.alertService.findOne(alertid);
@@ -41,7 +41,7 @@ export class AlertProcessor {
                     for (let index = 0; index < symbols.length; index++) {
                         const symbol = symbols[index];
                         const price = prices[index];
-                        console.log(`processing alert for ${symbol} at ${price}`);
+                        // console.log(`processing alert for ${symbol} at ${price}`);
                         //TODO: check the instrument
                         let orders = [];
                         let proceed = true;

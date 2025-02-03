@@ -79,20 +79,20 @@ export class AlertOrdersComponent {
         if(direction == 'BUY'){
             this.buy = !this.buy;
             this.alertService.updateTrendFlag(this.alertid,direction,this.buy).subscribe(data => {
-                console.log(data);
+                // console.log(data);
             });
         }
         if(direction == 'SELL'){
             this.sell = !this.sell;
             this.alertService.updateTrendFlag(this.alertid,direction,this.sell).subscribe(data => {
-                console.log(data);
+                // console.log(data);
             });
         }
     }
 
     squareOff(type:string,security:string){
         const request = this.buildSquareOffRequest(type,security);
-        console.log('Square off: ',request);
+        // console.log('Square off: ',request);
         
         request.length > 0 && this.service.squareOff(this.buildSquareOffRequest(type,security));
     }

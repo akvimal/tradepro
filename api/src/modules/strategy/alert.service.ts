@@ -99,7 +99,7 @@ export class AlertService {
                     // query = `update signals set bearish = '${(existing[0].bearish ? existing[0].bearish+',':'')+symbols}' where alert_id = ${alertid} and triggered = to_timestamp('${time}', '${time_format}')`;
                     query = `update signals set bearish = '${(existing[0].bearish ? existing[0].bearish+',':'')+symbols}' where alert_id = ${alertid} and triggered = '${triggered}'`;
                 }
-                console.log(query);
+                // console.log(query);
                 const updated = await this.manager.query(query);
             }
             // console.log(existing.rows);

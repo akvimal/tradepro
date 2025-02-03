@@ -10,7 +10,7 @@ export class DhanService {
     private wsService:WebSocketService) {}
 
   async getLtp(payload,partner){
-    console.log('LTP Request: ',JSON.stringify(payload));
+    // console.log('LTP Request: ',JSON.stringify(payload));
     const {access_token,client_id,api_url} = partner['config'];
     const response = await this.apiService.postData(`${api_url}/marketfeed/ltp`, payload,{
         'access-token': access_token,

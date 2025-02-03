@@ -15,7 +15,7 @@ export class OrderProcessor {
 
     async process(request: any) {
         const {type,orders} = request;
-        console.log('order processor request',request);
+        // console.log('order processor request',request);
         
         if(type != 'NEW'||type != 'CLOSE')
             console.log('UNKNOWN Order Request Type in Order Processor');

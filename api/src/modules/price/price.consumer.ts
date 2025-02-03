@@ -17,7 +17,7 @@ export class PriceConsumer implements OnModuleInit {
     ) {
           const url = this.configService.get('MESSAGE_URL');
           const connection = amqp.connect([url]);
-          console.log(`Connected to message broker at ${url} for price feed.`);
+          // console.log(`Connected to message broker at ${url} for price feed.`);
           this.channelWrapper = connection.createChannel();
     }
 
