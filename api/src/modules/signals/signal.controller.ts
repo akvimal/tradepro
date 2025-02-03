@@ -37,17 +37,11 @@ export class SignalController {
   getTimestampWithTime(timestamp, format = 'DD-MM-YYYY h:mm a') {
     if(timestamp.length <= 8){ // only time is provided
       format = (['am','AM','pm','PM'].indexOf(timestamp.substring(timestamp.length-2)) >= 0) 
-                ? 'DD-MM-YYYY h:mm a' : 'DD-MM-YYYY H:mm';
-      const dt = moment().utc().format('DD-MM-YYYY');
-      timestamp = moment(dt+' '+timestamp,format).utc();
+                ? 'h:mm a' : 'H:mm';
     }
-   
     // const timestamp = moment.tz(inputTime, 'DD-MM-YYYY h:mm a', 'Asia/Kolkata');
-    timestamp = moment.utc(timestamp, format);
+    timestamp = moment(timestamp, format);
     console.log(`timestamp: ${timestamp}`);
-
-    // Convert to PostgreSQL timestamp format
-    // return timestamp.format('YYYY-MM-DD HH:mm:ss');
     return timestamp;
   }
 
