@@ -49,25 +49,25 @@ export class OrdersService {
 
     async handlePriceChange(security,ltp){
         //get the pending SL legs with strategy config
-      const sllegs = await this.ordersRepo.getTrailSlLeg(security);
-      sllegs.forEach(async slleg => {
-        console.log('SL leg to be checked: ',slleg);
+    //   const sllegs = await this.ordersRepo.getTrailSlLeg(security);
+    //   sllegs.forEach(async slleg => {
+    //     // console.log('SL leg to be checked: ',slleg);
         
-        const {strategy,trail,trigger_price,config,type} = slleg;
-        //if price breached SL, square off
-        if((type == 'BUY' && ltp > trigger_price)||(type == 'SELL' && ltp < trigger_price))
-            await this.squareOffSingle(slleg, ltp);
+    //     const {strategy,trail,trigger_price,config,type} = slleg;
+    //     //if price breached SL, square off
+    //     if((type == 'BUY' && ltp > trigger_price)||(type == 'SELL' && ltp < trigger_price))
+    //         await this.squareOffSingle(slleg, ltp);
 
-        //if price advanced (greater than SL %) and trail flag is on, update trigger price by trail %
-        const sl = config['order'].find(c=> c.leg == 'SL');
-        const pcnt = sl['limit']['pcnt']/100;
-        const newTriggerPrice = type == 'BUY' ? (ltp * (1-pcnt)) : (ltp * (1+pcnt));
-        console.log(`pcnt: ${pcnt} trigger: ${newTriggerPrice}`);
+    //     //if price advanced (greater than SL %) and trail flag is on, update trigger price by trail %
+    //     const sl = config['order'].find(c=> c.leg == 'SL');
+    //     const pcnt = sl['limit']['pcnt']/100;
+    //     const newTriggerPrice = type == 'BUY' ? (ltp * (1-pcnt)) : (ltp * (1+pcnt));
+    //     // console.log(`pcnt: ${pcnt} trigger: ${newTriggerPrice}`);
         
-        if((type == 'BUY' && newTriggerPrice < trigger_price)||
-            (type == 'SELL' && newTriggerPrice > trigger_price))
-            await this.ordersRepo.updateSLTrail(strategy,security,newTriggerPrice);
-      });
+    //     if((type == 'BUY' && newTriggerPrice < trigger_price)||
+    //         (type == 'SELL' && newTriggerPrice > trigger_price))
+    //         await this.ordersRepo.updateSLTrail(strategy,security,newTriggerPrice);
+    //   });
       
     }
 
