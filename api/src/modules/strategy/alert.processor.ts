@@ -45,17 +45,17 @@ export class AlertProcessor {
                         //TODO: check the instrument
                         let orders = [];
                         let proceed = true;
-                        if(instrument.startsWith('OPT')){
-                            const {type,position,lots,moneyness} = option;
+                        // if(instrument.startsWith('OPT')){
+                        //     const {type,position,lots,moneyness} = option;
 
-                            orders = await this.orderService.findOrderBySecurity(alert.id,symbol,position,intraday!==undefined);
+                        //     orders = await this.orderService.findOrderBySecurity(alert.id,symbol,position,intraday!==undefined);
 
                             
 
-                        } else {
+                        // } else {
                             
                             orders = await this.orderService.findOrders(symbol, alert.id);
-                        }
+                        // }
                             // console.log(exOrders);
                             if(orders.length > 0){
                                 let bought = 0, sold = 0;
@@ -67,21 +67,21 @@ export class AlertProcessor {
                             // for same direction signal and unsold order qty exists for the day, then ignore
                             // for opposite direction signal and unsold order qty exists for the day, then square off (update SL leg to market)
                             if(proceed){
-                                if(instrument.startsWith('OPT')){
-                                    const {type,position,lots,moneyness} = option;
-                                    const secInfo = (await this.masterService.getOptionSecurityId(exchange,
-                                        segment, symbol, this.expiry[0], price, type, moneyness < 0));
+                                // if(instrument.startsWith('OPT')){
+                                //     const {type,position,lots,moneyness} = option;
+                                //     const secInfo = (await this.masterService.getOptionSecurityId(exchange,
+                                //         segment, symbol, this.expiry[0], price, type, moneyness < 0));
                                     
-                                    const secId = secInfo[Math.abs(moneyness)-1]['security_id'];
-                                    const qtyPerLot = secInfo[Math.abs(moneyness)-1]['lot_size'];
-                                    //determine the qty based on the config (in multiple of lot size)
-                                }
-                                else {
+                                //     const secId = secInfo[Math.abs(moneyness)-1]['security_id'];
+                                //     const qtyPerLot = secInfo[Math.abs(moneyness)-1]['lot_size'];
+                                //     //determine the qty based on the config (in multiple of lot size)
+                                // }
+                                // else {
                                     const secInfo = (await this.masterService.findSecurityInfo(exchange,segment,symbol))[0];
                                     //determine the qty based on the config
                                     const orders = this.buildOrderRequest(alert, account['balance'], direction, symbol, secInfo['security_id'], price);
                                     await this.mqService.publishMessage('orderQueue', {type:'NEW',orders}).catch(error => console.log(error));  
-                                }
+                                // }
                             }
                         
                     }
