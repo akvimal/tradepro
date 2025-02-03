@@ -111,7 +111,7 @@ export class OrdersRepo {
     }
 
     async findOrderSummary(date){
-        let sql = `select alert_id as strategy, order_dt as od, to_char(convert_utc_to_asia_time(order_dt),'yyyy-mm-dd') as order_date,
+        let sql = `select alert_id as strategy, to_char(convert_utc_to_asia_time(order_dt),'yyyy-mm-dd') as order_date,
         to_char(convert_utc_to_asia_time(order_dt),'HH24:MI') as order_time, trend, exchange, segment, symbol, coalesce(security_id, '') as security, leg, status, trigger_price as trigger,
                 sum(order_qty) as qty, avg(traded_price) as price 
                     from orders where `;
@@ -127,7 +127,7 @@ export class OrdersRepo {
         const summary:{strategy:string,orders:{date:string,bullish:any[],bearish:any[]}}[] = [];
 
         trades.filter(o => o.leg == 'MAIN' && o.status == 'TRADED').forEach(order => {
-            console.log(order);
+            // console.log(order);
             
             const {strategy,trend,symbol,exchange, segment,order_date,order_time,security,qty,price,trigger} = order;
             const found = summary.find(st => st.strategy == strategy);
