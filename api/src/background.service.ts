@@ -22,7 +22,7 @@ export class BackgroundService {
   async hearBeat() {
     const exch = this.exchanges.find(ex => ex['exchange'] == 'NSE')
     const {exchange,squareoff,session,intraday} = exch;
-    const timeNow = moment().format('HH:mm');
+    const timeNow = moment().tz('Asia/Kolkata').format('HH:mm');
     console.log(`Now:[${timeNow}] Open:[${session['open']}] Close:[${session['close']}] Sqr:[${intraday['squareoff']}]`);
     
       if(timeNow === session['open']){
@@ -57,13 +57,13 @@ export class BackgroundService {
   }
 
   isTimeLapsed(input: string): boolean {
-    const currentTime = moment().format('HH:mm'); // Get system time in HH:mm format
+    const currentTime = moment().tz('Asia/Kolkata').format('HH:mm'); // Get system time in HH:mm format
     // console.log(`${moment(currentTime, 'HH:mm')} > ${moment(givenTime, 'HH:mm')}`);
     return moment(currentTime, 'HH:mm').isAfter(moment(input, 'HH:mm').subtract(1,'minute'));
   }
 
   isTimeWithIn(from: string, to: string): boolean {
-    const currentTime = moment().format('HH:mm'); // Get system time in HH:mm format
+    const currentTime = moment().tz('Asia/Kolkata').format('HH:mm'); // Get system time in HH:mm format
     // console.log(`${moment(currentTime, 'HH:mm')} > ${moment(givenTime, 'HH:mm')}`);
     return moment(currentTime, 'HH:mm').isBetween(moment(from, 'HH:mm').subtract(1,'minute'),moment(to, 'HH:mm').add(1,'minute'));
   }
