@@ -103,7 +103,8 @@ export class AlertProcessor {
         const orderTemplate = {
             exchange,segment,instrument,
                     alert_id: alert.id,
-                    order_dt: moment().format('YYYY-MM-DD HH:mm:ss'),
+                    // order_dt: moment().format('YYYY-MM-DD HH:mm:ss'),
+                    order_dt: moment().utc(),
                     symbol,
                     security_id: secId,
                     trend: direction,

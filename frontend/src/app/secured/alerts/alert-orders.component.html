@@ -29,7 +29,7 @@
                 </td>
             </tr>
             <tr *ngFor="let o of orders.bullish" [ngStyle]="{background: o.balance > 0 ? 'inherit' : '#d5dbdb'}">
-                <td>{{getDateFormatted(o.date)}}</td>
+                <td>{{o.time}}</td>
                 <td>{{o.symbol}}</td>
                 <td>{{o.qty}}</td>
                 <td>{{o.price | number : '1.1-2'}}</td>
@@ -58,7 +58,7 @@
                 </td>
             </tr>
             <tr *ngFor="let o of orders.bearish" [ngStyle]="{background: o.balance > 0 ? 'inherit' : '#d5dbdb'}">
-                <td>{{getDateFormatted(o.date)}}</td>
+                <td>{{o.time}}</td>
                 <td>{{o.symbol}}</td>
                 <td>{{o.qty}}</td>
                 <td>{{o.price | number : '1.1-2'}}</td>

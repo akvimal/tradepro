@@ -111,14 +111,14 @@ export class OrdersRepo {
     }
 
     async findOrderSummary(date){
-        let sql = `select alert_id as strategy, to_char(order_dt,'yyyy-mm-dd') as order_date,
-        to_char(order_dt,'HH24:MI') as order_time, trend, exchange, segment, symbol, coalesce(security_id, '') as security, leg, status, trigger_price as trigger,
+        let sql = `select alert_id as strategy, order_dt as od, to_char(convert_utc_to_asia_time(order_dt),'yyyy-mm-dd') as order_date,
+        to_char(convert_utc_to_asia_time(order_dt),'HH24:MI') as order_time, trend, exchange, segment, symbol, coalesce(security_id, '') as security, leg, status, trigger_price as trigger,
                 sum(order_qty) as qty, avg(traded_price) as price 
                     from orders where `;
         if(date == undefined)
-            sql += ` date(order_dt) = current_date`;
+            sql += ` date(convert_utc_to_asia_time(order_dt)) = convert_utc_to_asia_time(current_date)`;
         else
-            sql += ` date(order_dt) = '${date}'`;
+            sql += ` date(convert_utc_to_asia_time(order_dt)) = '${date}'`;
         sql += ` group by alert_id, order_dt, trend, exchange, segment, symbol, security, leg, status, order_qty, traded_price, trigger_price
                     order by order_dt, trend, symbol, status `;
        
@@ -127,6 +127,8 @@ export class OrdersRepo {
         const summary:{strategy:string,orders:{date:string,bullish:any[],bearish:any[]}}[] = [];
 
         trades.filter(o => o.leg == 'MAIN' && o.status == 'TRADED').forEach(order => {
+            console.log(order);
+            
             const {strategy,trend,symbol,exchange, segment,order_date,order_time,security,qty,price,trigger} = order;
             const found = summary.find(st => st.strategy == strategy);
             const orderSummary = {symbol,date:`${order_date} ${order_time}`,time:order_time,exchange,segment,security,qty,balance:qty,price,trigger};

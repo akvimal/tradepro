@@ -129,8 +129,8 @@ export class AlertOrdersComponent {
         });
     }
 
-    getDateFormatted(dt:any){
-        // console.log(formatDate(dt,'HH:mm',this.locale));
-        return formatDate(dt,'HH:mm',this.locale);
-    }
+    // getDateFormatted(dt:any){
+    //     // console.log(formatDate(dt,'HH:mm',this.locale));
+    //     return formatDate(dt,'HH:mm',this.locale);
+    // }
 }
