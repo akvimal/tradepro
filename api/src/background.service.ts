@@ -23,7 +23,7 @@ export class BackgroundService {
     const exch = this.exchanges.find(ex => ex['exchange'] == 'NSE')
     const {exchange,squareoff,session,intraday} = exch;
     const timeNow = moment().tz('Asia/Kolkata').format('HH:mm');
-    console.log(`Now:[${timeNow}] Open:[${session['open']}] Close:[${session['close']}] Sqr:[${intraday['squareoff']}]`);
+    // console.log(`Now:[${timeNow}] Open:[${session['open']}] Close:[${session['close']}] Sqr:[${intraday['squareoff']}]`);
     
       if(timeNow === session['open']){
         console.log(`Exchange[${exchange}] Opened`);
