@@ -40,9 +40,9 @@ export class SignalController {
                 ? 'h:mm a' : 'H:mm';
     }
     // const timestamp = moment.tz(inputTime, 'DD-MM-YYYY h:mm a', 'Asia/Kolkata');
-    timestamp = moment(timestamp, format).utc();
-    console.log(`timestamp: ${timestamp}`);
-    return timestamp;
+    timestamp = moment(timestamp, format).tz("Asia/Kolkata");
+    console.log(`timestamp: ${moment(timestamp).format('YYYY-MM-DD HH:mm:ssZ')}`);
+    return moment(timestamp).format('YYYY-MM-DD HH:mm:ssZ');
   }
 
 }
