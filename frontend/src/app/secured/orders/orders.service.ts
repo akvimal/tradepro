@@ -85,6 +85,7 @@ export class OrderService {
         // const obj = JSON.parse(`{"${exchange}":[${security}]}`);
         this.http.post(`${this.apiUrl}/sqroff`,request).subscribe(data => {
             console.log('squared');
+            
         });
     }
     

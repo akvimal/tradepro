@@ -6,7 +6,18 @@
             {{alert.config?.exchange}} | {{alert.config?.segment}} | {{alert.config?.instrument}} | {{alert.interval}} {{alert.frequency}}
     </div>
     <div class="col-6 d-flex justify-content-end">
-        <h4>{{alert.balance|currency:'INR':'symbol-narrow':'1.0-0'}}</h4>
+        <div class="row">
+            <div class="col-12 m-0 p-0 fs-4 d-flex justify-content-end">{{alert.balance|currency:'INR':'symbol-narrow':'1.0-0'}}</div>
+            <div class="col-12 m-0 p-0 d-flex justify-content-end">
+                <a class="text-primary-emphasis fs-5" (click)="squareOffAll()">
+                    <i class="bi bi-bag-check-fill"></i></a>
+            </div>
+        </div>
+        
+        
+        
+        <!-- <button (click)="squareOffAll()">Sqr All</button> -->
+    
     </div>
 </div>
 <div class="row">
@@ -16,11 +27,12 @@
     </div>
     </div>
     <div class="row mt-2">
-    <div class="col-7">
-        <app-alert-trend [alertid]="id" [date]="date"></app-alert-trend>
+        <div class="col-6">
+            <app-alert-trend [alertid]="id" [date]="date"></app-alert-trend>
+        </div>
+        <div class="col-6">
+            <app-alert-orders [alertid]="id" [date]="date" [buy]="alert.buy" [sell]="alert.sell" [squareAll]="squareAll"
+            (squared)="resetSquareAll($event)"></app-alert-orders>
+        </div>
     </div>
-    <div class="col-5">
-        <app-alert-orders [alertid]="id" [date]="date" [buy]="alert.buy" [sell]="alert.sell"></app-alert-orders>
-    </div>
-</div>
 </div>

@@ -1,6 +1,6 @@
-import { Component, Input, SimpleChanges } from "@angular/core";
+import { Component, EventEmitter, Inject, Input, LOCALE_ID, Output, SimpleChanges } from "@angular/core";
 import { OrderService } from "../orders/orders.service";
-import { CommonModule } from "@angular/common";
+import { CommonModule, formatDate } from "@angular/common";
 import { WebSocketService } from "../../websocket.service";
 import { Subscription } from "rxjs";
 import { MarketFeedService } from "../market-feed.service";
@@ -21,13 +21,16 @@ export class AlertOrdersComponent {
     
     @Input() buy = true;
     @Input() sell = true;
+    @Input() squareAll = false;
+
+    @Output() squared = new EventEmitter();
     
     private subscription: Subscription;
     orders:any = [];
 
     constructor(private wsService: WebSocketService, private service:OrderService, 
         private alertService:AlertService,
-        private feedService:MarketFeedService){
+        private feedService:MarketFeedService,@Inject(LOCALE_ID) public locale: string){
         this.wsService.receiveMessages().subscribe((message) => {
             const {type,security,ltp} = message;
             if(message && type == 'PRICE') {
@@ -45,6 +48,10 @@ export class AlertOrdersComponent {
                         s['change_pcnt'] = (+s['price'] - s['ltp'])/+s['price'];
                     }
                 });
+            
+                if(this.squareAll){
+                    this.squared.emit(false);
+                }
             }
           }); 
 
@@ -54,6 +61,7 @@ export class AlertOrdersComponent {
             
             const found = data.find((st:any) => st.strategy == this.alertid && st['orders']['date'] == this.date);            
             this.orders = found ? found['orders'] : [];
+           
           });
     }
 
@@ -62,7 +70,9 @@ export class AlertOrdersComponent {
         if(changes['alertid'])
             this.alertid = changes['alertid'].currentValue;
         if(changes['date'])
-            this.date = changes['date'].currentValue;
+            this.date = changes['date'].currentValue; 
+        if(changes['squareAll'] && changes['squareAll'].currentValue == true)
+            this.squareOff('All','');
 
         this.fetch(this.alertid,this.date);
     }
@@ -119,4 +129,8 @@ export class AlertOrdersComponent {
         });
     }
 
+    getDateFormatted(dt:any){
+        // console.log(formatDate(dt,'HH:mm',this.locale));
+        return formatDate(dt,'HH:mm',this.locale);
+    }
 }

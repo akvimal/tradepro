@@ -1,10 +1,9 @@
 
-<button (click)="squareOff('All','')">Sqr All</button>
 <div class="row">
-    <div class="col-12">
-        <h6>Bullish</h6>
+    <div class="col-12 m-0 p-0 fs-7">
+        <!-- <h6>Bullish</h6>
         <button (click)="toggleTrend('BUY')">Turn {{buy ? 'OFF' : 'ON'}}</button>&nbsp;&nbsp;
-        <button (click)="squareOff('Bullish','')">Sqr</button>
+        <button (click)="squareOff('Bullish','')">Sqr</button> -->
         <table width="100%">
             <tr>
                 <th>Time</th>
@@ -13,46 +12,69 @@
                 <th>Entry</th>
                 <th>SL</th>
                 <th>Exit</th>
+                <th></th>
+            </tr>
+            <tr>
+                <td colspan="6" class="fs-5">
+                        <a class="text-danger" *ngIf="buy" (click)="toggleTrend('BUY')">
+                            <i class="bi bi-stop-circle"></i></a>
+                            <a class="text-success" *ngIf="!buy" (click)="toggleTrend('BUY')">
+                            <i class="bi bi-play-circle"></i></a>
+                    <span style="font-weight:bold;margin-left:.3em">Bullish</span>
+                </td>
+                <td class="fs-5 text-center">
+                    <a class="text-primary" (click)="squareOff('Bullish','')">
+                    <i class="bi bi-bag-check-fill"></i></a>
+                    <!-- <button (click)="squareOff('Bullish','')">Sqr</button> -->
+                </td>
             </tr>
             <tr *ngFor="let o of orders.bullish" [ngStyle]="{background: o.balance > 0 ? 'inherit' : '#d5dbdb'}">
-                <td>{{o.time}}</td><td>{{o.symbol}}</td>
-                <td>{{o.qty}}</td>
-                <td>{{o.price | number : '1.1-2'}}</td>
-                <td>{{o.trigger | number : '1.1-2'}} ({{o.sl_pcnt|percent:'0.1-1'}}) <div *ngIf="o.balance > 0">
-                </div></td>
-                <td [ngStyle]="{background:o.change_pcnt > 0 ? '#abebc6' : '#f5b7b1'}">
-                    {{(o.balance == 0 ? o.exit : o.ltp) | number : '1.1-2'}} ({{o.change_pcnt|percent:'0.1-1'}})
-                    <button *ngIf="o.balance > 0" (click)="squareOff('',o.security)">Sqr</button>
-                </td>
-                <!-- ({{o.change_pcnt|percent:'0.1-1'}}) -->
-            </tr>
-        </table>
-    </div>
-    <div class="col-12 mt-2">
-        <h6>Bearish</h6>
-        <button (click)="toggleTrend('SELL')">Turn {{sell ? 'OFF' : 'ON'}}</button>&nbsp;&nbsp;
-        <button (click)="squareOff('Bearish','')">Sqr</button>
-        <table width="100%">
-            <tr>
-                <th>Security</th>
-                <th>Qty</th>
-                <th>Entry</th>
-                <th>SL</th>
-                <th>Exit</th>
-            </tr>
-            <tr *ngFor="let o of orders.bearish" [ngStyle]="{background: o.balance > 0 ? 'inherit' : '#d5dbdb'}">
+                <td>{{getDateFormatted(o.date)}}</td>
                 <td>{{o.symbol}}</td>
                 <td>{{o.qty}}</td>
                 <td>{{o.price | number : '1.1-2'}}</td>
-                <td>{{o.trigger | number : '1.1-2'}} ({{o.sl_pcnt|percent:'0.1-1'}}) <div *ngIf="o.balance > 0">
-                </div></td>
+                <td>{{o.trigger | number : '1.1-2'}} ({{o.sl_pcnt|percent:'0.1-1'}})</td>
                 <td [ngStyle]="{background:o.change_pcnt > 0 ? '#abebc6' : '#f5b7b1'}">
                     {{(o.balance == 0 ? o.exit : o.ltp) | number : '1.1-2'}} ({{o.change_pcnt|percent:'0.1-1'}})
-                    <button *ngIf="o.balance > 0" (click)="squareOff('',o.security)">Sqr</button>
+                </td>
+                <td class="fs-5 text-center">
+                    <a class="text-secondary" *ngIf="o.balance > 0" (click)="squareOff('',o.security)">
+                        <i class="bi bi-bag-check-fill"></i></a>
+                    <!-- <button *ngIf="o.balance > 0" (click)="squareOff('',o.security)">Sqr</button></td> -->
+                <!-- ({{o.change_pcnt|percent:'0.1-1'}}) -->
+            </tr>
+            <tr>
+                <td colspan="6" class="fs-5">
+                    <a class="text-danger" *ngIf="sell" (click)="toggleTrend('SELL')">
+                        <i class="bi bi-stop-circle"></i></a>
+                        <a class="text-success" *ngIf="!sell" (click)="toggleTrend('SELL')">
+                        <i class="bi bi-play-circle"></i></a>
+                <span style="font-weight:bold;margin-left:.3em">Bearish</span>
+            </td>
+                <td class="fs-5 text-center">
+                    <a class="text-primary" *ngIf="buy" (click)="squareOff('Bearish','')">
+                        <i class="bi bi-bag-check-fill"></i></a>
+                    <!-- <button (click)="squareOff('Bearish','')">Sqr</button> -->
+                </td>
+            </tr>
+            <tr *ngFor="let o of orders.bearish" [ngStyle]="{background: o.balance > 0 ? 'inherit' : '#d5dbdb'}">
+                <td>{{getDateFormatted(o.date)}}</td>
+                <td>{{o.symbol}}</td>
+                <td>{{o.qty}}</td>
+                <td>{{o.price | number : '1.1-2'}}</td>
+                <td>{{o.trigger | number : '1.1-2'}} ({{o.sl_pcnt|percent:'0.1-1'}})</td>
+                <td [ngStyle]="{background:o.change_pcnt > 0 ? '#abebc6' : '#f5b7b1'}">
+                    {{(o.balance == 0 ? o.exit : o.ltp) | number : '1.1-2'}} ({{o.change_pcnt|percent:'0.1-1'}})
+                </td>
+                <td class="fs-5 text-center">
+                    <a class="text-secondary" *ngIf="o.balance > 0" (click)="squareOff('',o.security)">
+                        <i class="bi bi-bag-check-fill"></i></a>
+                    <!-- <button *ngIf="o.balance > 0" (click)="squareOff('',o.security)">Sqr</button> -->
                 </td>
                 <!-- ({{o.change_pcnt|percent:'0.1-1'}}) -->
             </tr>
         </table>
     </div>
+   
 </div>
 

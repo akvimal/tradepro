@@ -129,7 +129,7 @@ export class OrdersRepo {
         trades.filter(o => o.leg == 'MAIN' && o.status == 'TRADED').forEach(order => {
             const {strategy,trend,symbol,exchange, segment,order_date,order_time,security,qty,price,trigger} = order;
             const found = summary.find(st => st.strategy == strategy);
-            const orderSummary = {symbol,time:order_time,exchange,segment,security,qty,balance:qty,price,trigger};
+            const orderSummary = {symbol,date:`${order_date} ${order_time}`,time:order_time,exchange,segment,security,qty,balance:qty,price,trigger};
             if(trend == 'Bullish'){ 
                 found ? found['orders'].bullish.push(orderSummary) : 
                     summary.push({strategy,orders:{date:order_date,bullish:[orderSummary],bearish:[]}});

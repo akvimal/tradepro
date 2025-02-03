@@ -18,7 +18,7 @@ export class AlertDashboardComponent {
   
   id:string = '';
   date:string = '';
-
+  squareAll = false;
   alert:any;
 
   constructor(private route: ActivatedRoute, private service:AlertService){}
@@ -38,4 +38,11 @@ export class AlertDashboardComponent {
     this.date = formatDate(new Date(), 'yyyy-MM-dd', 'en-US');
   }
 
+  squareOffAll(){
+    this.squareAll = true;
+  }
+
+  resetSquareAll(data:boolean){
+    this.squareAll = data;
+  }
 }
