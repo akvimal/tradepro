@@ -40,13 +40,6 @@ export class TrendService {
     }
 
     async save( alertid: string, direction: string, triggered:string, symbols:string) {  
-      
-        // const time_format = 'yyyy-mm-dd HH:MI am';
-        // const time = moment().format('YYYY-MM-DD') + ' ' +triggered;
-        
-        // const time_format = 'dd-mm-yyyy HH:MI am';
-
-        // let query = `select * from signals where alert_id = ${alertid} and triggered = to_timestamp('${time}', '${time_format}')`
         let query = `select * from trend where alert_id = ${alertid} and triggered = '${triggered}'`
         
         try {

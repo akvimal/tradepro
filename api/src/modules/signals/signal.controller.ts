@@ -19,7 +19,6 @@ export class SignalController {
       @Body() payload: any, @Res() res: any) {
     //log the incoming data
     //save incoming alert to db
-    console.log(payload);
     try {
         // console.log('Saving trend to db');
         await this.trendService.save(alertid, direction, this.getTimestampWithTime(payload['triggered_at']), payload.stocks);
@@ -36,18 +35,19 @@ export class SignalController {
   }
   
   getTimestampWithTime(timestamp, format = 'DD-MM-YYYY h:mm a') {
-
     if(timestamp.length <= 8){ // only time is provided
       format = (['am','AM','pm','PM'].indexOf(timestamp.substring(timestamp.length-2)) >= 0) 
                 ? 'DD-MM-YYYY h:mm a' : 'DD-MM-YYYY H:mm';
-      timestamp = moment().format('DD-MM-YYYY') + ' ' + timestamp;
+      const dt = moment().utc().format('DD-MM-YYYY');
+      timestamp = moment(dt+' '+timestamp,format).utc();
     }
    
     // const timestamp = moment.tz(inputTime, 'DD-MM-YYYY h:mm a', 'Asia/Kolkata');
-    timestamp = moment(timestamp, format);
+    timestamp = moment.utc(timestamp, format);
 
     // Convert to PostgreSQL timestamp format
-    return timestamp.format('YYYY-MM-DD HH:mm:ss');
+    // return timestamp.format('YYYY-MM-DD HH:mm:ss');
+    return timestamp;
   }
 
 }
