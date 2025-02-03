@@ -15,16 +15,16 @@ export class OrderProcessor {
 
     async process(request: any) {
         const {type,orders} = request;
-        // console.log('order processor request',request);
+        console.log('order processor request type:',type);
         
-        if(type != 'NEW'||type != 'CLOSE')
+        if(type !== 'NEW'||type !== 'CLOSE')
             console.log('UNKNOWN Order Request Type in Order Processor');
 
-        if(type == 'NEW'){
+        if(type === 'NEW'){
             await this.orderService.placeOrder(orders);
         }
         
-        else if(type == 'CLOSE'){
+        else if(type === 'CLOSE'){
             // const priceList = await this.priceService.getLtp(orders);
             await this.orderService.squareOff(orders);
         }
