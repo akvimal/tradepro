@@ -10,7 +10,7 @@ export class BackgroundService {
   
   private readonly logger = new Logger(BackgroundService.name);
 
-  exchanges = [{exchange:'NSE',active:false,squareoff:false,session:{open:'17:07',close:'20:00'},intraday:{squareoff:'17:55'}}]
+  exchanges = [{exchange:'NSE',active:false,squareoff:false,session:{open:'09:15',close:'15:30'},intraday:{squareoff:'15:19'}}]
 
   constructor(private readonly orderProcessor:OrderProcessor,
     private readonly orderService:OrdersService,
@@ -23,16 +23,15 @@ export class BackgroundService {
     const exch = this.exchanges.find(ex => ex['exchange'] == 'NSE')
     const {exchange,squareoff,session,intraday} = exch;
     const timeNow = moment().format('HH:mm');
-  
+    console.log(`Now:[${timeNow}] Open:[${session['open']}] Close:[${session['close']}] Sqr:[${intraday['squareoff']}]`);
     
       if(timeNow === session['open']){
         console.log(`Exchange[${exchange}] Opened`);
         exch['squareoff'] = false;
-        
       }
+
       if(!squareoff && timeNow === intraday['squareoff']){
-        console.log(`Exchange[${exchange}] Squared Off triggered`);
-        
+        console.log(`Exchange[${exchange}] Squared Off triggered`);  
         const orders = await this.orderService.getOrderSummary();
         const pendingOrders = [];
         orders.forEach(order => {
