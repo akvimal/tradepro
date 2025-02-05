@@ -21,6 +21,18 @@ export class AlertController {
    return await this.service.findAllById(payload); 
   }
   
+  @Post('/balance')
+  async getBalance(@Body() payload:any) {
+  //  return await this.service.findAllById(payload); 
+    const sample = {
+      strategy: 1,
+      capital: 1000000,
+      balance: [{date: '2025-02-04',amount:1150000}],
+      realized: 10000, unrealized: 2500
+    }
+    return [sample];
+  }
+  
   @Put('/trend')
   async updateTrendFlag(@Body() payload:any) {
    return await this.service.updateTrendFlag(payload['alertId'],payload['trend'],payload['on']); 

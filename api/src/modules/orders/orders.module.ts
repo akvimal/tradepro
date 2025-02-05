@@ -9,7 +9,7 @@ import { PriceModule } from "../price/price.module";
 import { AccountsModule } from "../accounts/accounts.module";
 
 @Module({
-  imports: [CommonModule, AccountsModule],
+  imports: [CommonModule, AccountsModule, PriceModule],
   controllers: [OrdersController],
   providers: [OrderConsumer, OrderProcessor, OrdersService, OrdersRepo],
   exports: [OrdersService,OrderProcessor]

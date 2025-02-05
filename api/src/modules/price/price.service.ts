@@ -20,17 +20,24 @@ export class PriceService {
 
     buildLtpBulkRequest(orders){//TODO: this can be moved to partner impl
         const request = {}; //[{NSE_EQ:[100,200]}]
-        orders.forEach(order => {
+        if(orders.length > 1){
+          orders.forEach(order => {
+            const {exchange,segment,security} = order;
+            const key = `${exchange}_${segment}`;
+            
+            const found = Object.keys(request).indexOf(key) >= 0;      
+            if(found) 
+              request[key].push(+security);
+            else {
+              request[`${key}`] = [+security];
+            }
+          });
+        }
+        else if(orders.length == 1) {
+          const order = orders[0];
           const {exchange,segment,security} = order;
-          const key = `${exchange}_${segment}`;
-          
-          const found = Object.keys(request).indexOf(key) >= 0;      
-          if(found) 
-            request[key].push(+security);
-          else {
-            request[`${key}`] = [+security];
-          }
-        });
+          request[`${exchange}_${segment}`] = [+security];
+        }
         return request;
     }
 

@@ -7,11 +7,23 @@
     </div>
     <div class="col-6 d-flex justify-content-end">
         <div class="row">
-            <div class="col-12 m-0 p-0 fs-4 d-flex justify-content-end">{{alert.balance|currency:'INR':'symbol-narrow':'1.0-0'}}</div>
-            <div class="col-12 m-0 p-0 d-flex justify-content-end">
-                <a class="text-primary-emphasis fs-5" (click)="squareOffAll()">
-                    <i class="bi bi-bag-check-fill"></i></a>
+            <div class="col-12 m-0 p-0 fs-4 d-flex justify-content-end">
+                <!-- {{alert.balance|currency:'INR':'symbol-narrow':'1.0-0'}} -->
+                 <div class="row m-0 p-0">
+                    <div class="col-12 m-0 p-0 d-flex justify-content-end">
+                        <span [ngStyle]="{color:balance?.capital_change>0?'green':'red'}">{{balance?.capital_now}} ({{balance?.capital_change|percent}})</span>
+                    </div>
+                    <div class="col-12 m-0 p-0 fs-5 d-flex justify-content-end">
+                        <span [ngStyle]="{color:balance?.change_realized>0?'green':'red'}"> {{balance?.realized}} ({{balance?.change_realized|percent: '1.1-1'}})</span> 
+                        <span [ngStyle]="{color:balance?.change_unrealized>0?'green':'red'}" style="padding-left: .5em;">{{balance?.unrealized}} ({{balance?.change_unrealized|percent: '1.1-1'}})</span>
+                        <a class="text-primary-emphasis fs-5" style="padding-left: .5em;" (click)="squareOffAll()">
+                            <i class="bi bi-bag-check-fill"></i></a>
+                    </div>
+                 </div>
             </div>
+            <!-- <div class="col-12 m-0 p-0 d-flex justify-content-end">
+               
+            </div> -->
         </div>
         
         

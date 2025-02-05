@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Inject, Input, LOCALE_ID, Output, SimpleChanges } from "@angular/core";
+import { Component, EventEmitter, Inject, Input, Output, SimpleChanges } from "@angular/core";
 import { OrderService } from "../orders/orders.service";
 import { CommonModule, formatDate } from "@angular/common";
 import { WebSocketService } from "../../websocket.service";
@@ -28,9 +28,9 @@ export class AlertOrdersComponent {
     private subscription: Subscription;
     orders:any = [];
 
-    constructor(private wsService: WebSocketService, private service:OrderService, 
-        private alertService:AlertService,
-        private feedService:MarketFeedService,@Inject(LOCALE_ID) public locale: string){
+    constructor(private wsService: WebSocketService, 
+        private service:OrderService, 
+        private alertService:AlertService){
         this.wsService.receiveMessages().subscribe((message) => {
             const {type,security,ltp} = message;
             if(message && type == 'PRICE') {
@@ -129,8 +129,4 @@ export class AlertOrdersComponent {
         });
     }
 
-    // getDateFormatted(dt:any){
-    //     // console.log(formatDate(dt,'HH:mm',this.locale));
-    //     return formatDate(dt,'HH:mm',this.locale);
-    // }
 }

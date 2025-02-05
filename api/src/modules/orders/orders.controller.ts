@@ -22,10 +22,10 @@ export class OrdersController {
    return await this.service.getOrderSummary(date); 
   }
 
-  @Post()
-  async create(@Body() payload:any) {
-   return await this.service.placeOrder(payload); 
-  }
+  // @Post()
+  // async create(@Body() payload:any) {
+  //  return await this.service.placeOrder(payload); 
+  // }
 
   @Post('/sqroff')
   async squareOff(@Body() orders:any) {
@@ -35,12 +35,12 @@ export class OrdersController {
   }
 
 
-  @Post('/sladjust')
-  async slAdjust(@Body() payload:any) {
-    const {security,price} = payload;
-    //change SL leg trigger
-    //publish latest orders
-   return await this.service.adjustSL(security,price); 
-  }
+  // @Post('/sladjust')
+  // async slAdjust(@Body() payload:any) {
+  //   const {security,price} = payload;
+  //   //change SL leg trigger
+  //   //publish latest orders
+  //  return await this.service.adjustSL(security,price); 
+  // }
 
 }
