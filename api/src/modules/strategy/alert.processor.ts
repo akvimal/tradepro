@@ -40,6 +40,10 @@ export class AlertProcessor {
                     const prices = trigger_prices.split(',');
                     for (let index = 0; index < symbols.length; index++) {
                         const symbol = symbols[index];
+                        if(['NIFTY','BANKNIFTY'].indexOf(symbol) >= 0){
+                            console.log(`Skipping [${symbol}]`);
+                            continue;
+                        }
                         const price = prices[index];
                         // console.log(`processing alert for ${symbol} at ${price}`);
                         //TODO: check the instrument
