@@ -23,11 +23,36 @@ export class OrdersService {
 
     }
 
+    async getBalanceByStrategy(id:number){
+        const days = await this.ordersRepo.getStrategyBalanceByDay(id);
+        // console.log('days',days);
+        let pnl = 0;
+        days.forEach(dt => {
+            pnl += dt['pnl'];
+        });
+        const today = await this.ordersRepo.getStrategyBalanceToday(id);
+        // console.log('today',today);
+        const todayPositions = [];
+        for (let index = 0; index < today.length; index++) {
+            const trade = today[index];
+            const found = todayPositions.find(o => o['security_id'] == trade['security_id']);
+            if(!found) {
+                todayPositions.push(trade);
+            }
+            else if (found['status'] == 'PENDING' && trade['status'] == 'TRADED'){
+                found['price'] = trade['traded_price'];
+                found['realized'] = false;
+            } else if (found['status'] == 'TRADED' && trade['status'] == 'TRADED'){
+                found['pnl'] = Math.round((found['order_type'] == 'SELL' ? (found['traded_price']-trade['traded_price']) : (trade['traded_price']-found['traded_price']))* found['order_qty']);
+                found['realized'] = true;
+            }
+        }
+
+        return {pnl,days,positions:todayPositions}
+    }
+
     async getOrderSummary(date=moment().format('YYYY-MM-DD')){
-        let summary = [];
-        summary = await this.ordersRepo.findOrderSummary(date);
-        // console.log('SUMMARY: ',summary);
-        return summary;
+        return await this.ordersRepo.findOrderSummary(date);
     }
 
     async getPendingSlLeg(alertid, type, security){
@@ -63,19 +88,15 @@ export class OrdersService {
     async squareOff(orders){        
         const priceList = await this.getLtp(orders);
         const slOrders = [];
-        for (let index = 0; index < orders.length; index++) {
-            const order = orders[index];
-            const {strategy, type, security} = order;
-            const {price} = priceList.find(p => p.security == order['security']);
-            if(price){
-                const leg = await this.ordersRepo.getPendingSlLeg(strategy, type, security);
-                if(leg){
-                    leg['tradedPrice'] = price;
-                    leg['status'] = 'TRADED';
-                    slOrders.push(leg); 
-                }
-            }
-        }       
+        const legs = await this.ordersRepo.getPendingSlLegs(3, orders.map(o => o['security']));
+        
+        for (let index = 0; index < legs.length; index++) {
+            const sl = legs[index];
+            const {price} = priceList.find(p => p.security == sl['securityId']);
+            sl['tradedPrice'] = price;
+            sl['status'] = 'TRADED';
+            slOrders.push(sl); 
+        }
         
         await this.ordersRepo.squareOffOrders(slOrders);
            

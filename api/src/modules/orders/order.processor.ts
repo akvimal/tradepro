@@ -24,9 +24,6 @@ export class OrderProcessor {
 
     async process(request: any) {
         const {type} = request;
-       
-        console.log('type:',type);
-        // console.log('payload:',payload);
         if(type == 'NEW'){
             const {symbol,price,strategy,direction} = request['payload'];
             const {config,balance,virtual,interval,frequency,capital} = strategy;
@@ -90,7 +87,6 @@ export class OrderProcessor {
                 }
             }
         } else if(type === 'CLOSE'){
-                // const priceList = await this.priceService.getLtp(orders);
                 await this.orderService.squareOff(request['orders']);
         } else {
                 console.log(`UNKNOWN Order Request Type[${type}] in Order Processor`);

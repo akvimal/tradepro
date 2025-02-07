@@ -19,7 +19,13 @@ export class OrdersController {
   @Post('/summary')
   async findOrderByAlert(@Body() payload:any) {
     const {date} = payload;
-   return await this.service.getOrderSummary(date); 
+    return await this.service.getOrderSummary(date); 
+  }
+
+  @Get('/balance/:id')
+  async findBalanceByStrategy(@Param('id') id:number) {
+    
+    return await this.service.getBalanceByStrategy(id); 
   }
 
   // @Post()
@@ -29,7 +35,7 @@ export class OrdersController {
 
   @Post('/sqroff')
   async squareOff(@Body() orders:any) {
-    // console.log('orders received to square:',orders);
+    console.log('orders received to square:',orders);
     
    return await this.mqService.publishMessage(Constants.QUEUE_ORDER, {type:Constants.ORDER_CLOSE,orders}).catch(error => console.log(error));
   }

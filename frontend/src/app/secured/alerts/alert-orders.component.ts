@@ -31,29 +31,7 @@ export class AlertOrdersComponent {
     constructor(private wsService: WebSocketService, 
         private service:OrderService, 
         private alertService:AlertService){
-        this.wsService.receiveMessages().subscribe((message) => {
-            const {type,security,ltp} = message;
-            if(message && type == 'PRICE') {
-                this.orders.bullish && this.orders.bullish.forEach((s:any) => {
-                    if(s.security == security) {
-                        s['ltp'] =  s.balance > 0 ? ltp : s['exit'];
-                        s['change_valu'] = s['ltp'] - +s['price'];
-                        s['change_pcnt'] = (s['ltp'] - +s['price'])/+s['price'];
-                    }
-                });
-                this.orders.bearish && this.orders.bearish.forEach((s:any) => {
-                    if(s.security == security) {
-                        s['ltp'] = s.balance > 0 ? ltp : s['exit'];
-                        s['change_valu'] = +s['price'] - s['ltp'];
-                        s['change_pcnt'] = (+s['price'] - s['ltp'])/+s['price'];
-                    }
-                });
-            
-                if(this.squareAll){
-                    this.squared.emit(false);
-                }
-            }
-          }); 
+       
 
           this.subscription = this.service.orders$
           .subscribe(data => {

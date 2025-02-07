@@ -9,6 +9,7 @@ import { AlertService } from './alerts.service';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { WebSocketService } from '../../websocket.service';
 import { Subscription } from 'rxjs';
+import { OrderService } from '../orders/orders.service';
 
 @Component({
   imports: [
@@ -22,11 +23,13 @@ export class AlertDashboardComponent {
   date:string = '';
   squareAll = false;
   alert:any;
-  balance:any;
+  balance:any = {};
   
   private subscription: Subscription;
 
-  constructor(private route: ActivatedRoute, private wsService: WebSocketService, 
+  constructor(private route: ActivatedRoute, 
+    private wsService: WebSocketService, 
+    private orderService:OrderService, 
     private service:AlertService){
     // this.wsService.receiveMessages().subscribe((message) => {
     //   const {type,payload} = message;
@@ -34,37 +37,53 @@ export class AlertDashboardComponent {
     //       console.log('Balance',payload);
     //   }
     // }); 
-    this.subscription = this.service.balance$
+    this.subscription = this.orderService.balance$
           .subscribe(data => {
+            console.log('balance subject data: ',data);
+            
             // console.log(`>>> orders [${this.date}] from cache`,data);
             // console.log('data: ',data);
-            this.balance = data.find(d => d.strategy == this.id);
-            if(this.balance){
-              // console.log(this.balance);
-              if(this.balance.balance.length>0)
-                this.balance['capital_now'] = this.balance.balance[0].amount;
-                this.balance['capital_change'] = (this.balance.balance[0].amount-this.balance.capital)/this.balance.capital;
-                this.balance['change_realized'] = this.balance.realized/this.balance.balance[0].amount;
-                this.balance['change_unrealized'] = this.balance.unrealized/this.balance.balance[0].amount;
-              }
+            if(data && this.alert) {
+              // console.log('data from subject',data);
+              this.balance['capital_now'] = this.alert['capital'] + data['pnl'];
+              // this.balance = data.find(d => d.strategy == this.id);
+              // if(this.balance){
+                // console.log(this.balance);
+                
+                // if(data['pnl']){
+                  this.balance['capital_change'] = (data['pnl'] ? data['pnl'] : 0)/this.alert['capital'];
+                  let realized = 0, value = 0;
+                  data['positions']?.filter(p => p['realized'] == true).forEach(o => {
+                    realized += o['pnl'];
+                    value += ((o['traded_price']*o['order_qty'])-o['pnl'])
+                  });
+                // }
+                
+                
+                this.balance['realized_amt'] = Math.round(realized);
+                this.balance['realized_pcnt'] = realized/value;
+                // this.balance['change_realized'] = this.balance.realized/this.balance.balance[0].amount;
+                  // this.balance['change_unrealized'] = this.balance.unrealized/this.balance.balance[0].amount;
+                this.balance['unrealized'] = data['unrealized'];
+              // }
+            }
           });
   }
 
   
 
   ngOnInit(){
-    this.route.paramMap.subscribe((params) => {
-      
-      
+    this.route.paramMap.subscribe(async (params) => {
       this.id = params.get('id')!;
-      console.log('ID>',this.id);
       this.today();
       
       this.service.findById(this.id).subscribe(data => {
         this.alert = data;
       });  
+
+      await this.orderService.getBalance(this.id);
     });
-    this.service.getBalance({});
+    
   }
 
   today(){

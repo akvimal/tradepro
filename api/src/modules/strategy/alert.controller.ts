@@ -26,9 +26,11 @@ export class AlertController {
   //  return await this.service.findAllById(payload); 
     const sample = {
       strategy: 1,
-      capital: 1000000,
-      balance: [{date: '2025-02-04',amount:1150000}],
-      realized: 10000, unrealized: 2500
+      capital: 1000000, //
+      balance: [{date: '2025-02-04',amount:1150000}], // PnL from transactions on daily
+      realized: 10000, unrealized: 2500 
+      // realized: present squared PnL for the day, refreshed on every squareoff for the day
+      // unrealized: present pending PnL, refreshed on every price change
     }
     return [sample];
   }

@@ -9,30 +9,21 @@ import { WebSocketService } from "../../websocket.service";
 })
 export class AlertService {
 
-    private subject = new BehaviorSubject<{strategy: string, balance:any}[]>([]); 
-    balance$ = this.subject.asObservable();
+    // private subject = new BehaviorSubject<{strategy: string, balance:any}[]>([]); 
+    // balance$ = this.subject.asObservable();
     
     apiUrl = `${environment.apiHost}/alerts`;
 
     constructor(private http: HttpClient, private socketService:WebSocketService){
-        this.socketService.receiveMessages().subscribe((message) => {
-            if(message && message.type == 'PRICE'){
+        // this.socketService.receiveMessages().subscribe((message) => {
+        //     if(message && message.type == 'PRICE'){
 
-                console.log(message['payload']);
+        //         // console.log(message['payload']);
                 
                                 
-                this.subject.next(message['payload']);
-            }
-        });
-    }
-
-    async getBalance(criteria:any){
-        
-        this.http.post(`${this.apiUrl}/balance`,criteria).subscribe((data:any) => {
-            console.log(data);
-            
-            this.subject.next(data);
-        });
+        //         this.subject.next(message['payload']);
+        //     }
+        // });
     }
 
     findById(id:string){

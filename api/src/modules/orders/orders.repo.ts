@@ -4,7 +4,7 @@ import { InjectEntityManager } from "@nestjs/typeorm";
 import { Account } from "src/entities/account.entity";
 import { Order } from "src/entities/order.entity";
 import { Transaction } from "src/entities/transaction.entity";
-import { EntityManager } from "typeorm";
+import { EntityManager, In } from "typeorm";
 
 @Injectable()
 export class OrdersRepo {
@@ -32,6 +32,10 @@ export class OrdersRepo {
                 }
             }
         });
+    }
+
+    async getPendingSlLegs(alertId, securityIds){
+        return await this.manager.find(Order, {where:{alertId,leg:'SL',status:'PENDING',securityId: In(securityIds)}});
     }
 
     async getPendingSlLeg(alertId, type, securityId){
@@ -97,8 +101,33 @@ export class OrdersRepo {
         return await this.manager.query(sql);
     }
 
+    async getStrategyBalanceByDay(id:number){
+        const sql = `WITH traded_summary AS (
+                                SELECT
+                                    to_char(order_dt,'YYYY-MM-DD') as date,
+                                    SUM(CASE WHEN order_type = 'SELL' THEN order_qty * traded_price END) -
+                                    SUM(CASE WHEN order_type = 'BUY' THEN order_qty * traded_price END) AS pnl
+                                    from orders
+                                    where alert_id = ${id} and date(order_dt) < CURRENT_DATE AND status = 'TRADED'
+                                    GROUP BY order_dt)
+                            SELECT 
+                                ts.date, 
+                                round(COALESCE(ts.pnl, 0)) AS pnl
+                            FROM traded_summary ts
+                            ORDER BY ts.date`;
+        return await this.manager.query(sql);
+    }
+
+    async getStrategyBalanceToday(id:number){
+        const sql = `select security_id, status, traded_price, order_type, order_qty
+                    from orders
+                    where alert_id = ${id} and date(order_dt) = CURRENT_DATE AND status in ('PENDING','TRADED')
+                    order by security_id, status`;
+        return await this.manager.query(sql);
+    }
+
     async findOrderSummary(date){
-        let sql = `select alert_id as strategy, to_char(convert_utc_to_asia_time(order_dt),'yyyy-mm-dd') as order_date,
+        let sql = `select alert_id as strategy, order_type, to_char(convert_utc_to_asia_time(order_dt),'yyyy-mm-dd') as order_date,
         to_char(convert_utc_to_asia_time(order_dt),'HH24:MI') as order_time, trend, exchange, segment, symbol, coalesce(security_id, '') as security, leg, status, trigger_price as trigger,
                 sum(order_qty) as qty, avg(traded_price) as price 
                     from orders where `;
@@ -106,9 +135,11 @@ export class OrdersRepo {
             sql += ` date(convert_utc_to_asia_time(order_dt)) = convert_utc_to_asia_time(current_date)`;
         else
             sql += ` date(convert_utc_to_asia_time(order_dt)) = '${date}'`;
-        sql += ` group by alert_id, order_dt, trend, exchange, segment, symbol, security, leg, status, order_qty, traded_price, trigger_price
+        sql += ` group by alert_id, order_type, order_dt, trend, exchange, segment, symbol, security, leg, status, order_qty, traded_price, trigger_price
                     order by order_dt, trend, symbol, status `;
        
+        // console.log(`Date: ${date} \nSQL: ${sql}`);
+                    
         const trades = await this.manager.query(sql);
 
         const summary:{strategy:string,orders:{date:string,bullish:any[],bearish:any[]}}[] = [];
@@ -116,9 +147,9 @@ export class OrdersRepo {
         trades.filter(o => o.leg == 'MAIN' && o.status == 'TRADED').forEach(order => {
             // console.log(order);
             
-            const {strategy,trend,symbol,exchange, segment,order_date,order_time,security,qty,price,trigger} = order;
+            const {strategy,trend,symbol,exchange, order_type, segment,order_date,order_time,security,qty,price,trigger} = order;
             const found = summary.find(st => st.strategy == strategy);
-            const orderSummary = {symbol,date:`${order_date} ${order_time}`,time:order_time,exchange,segment,security,qty,balance:qty,price,trigger};
+            const orderSummary = {symbol,date:`${order_date} ${order_time}`,time:order_time,order_type,exchange,segment,security,qty,balance:qty,price,trigger};
             if(trend == 'Bullish'){ 
                 found ? found['orders'].bullish.push(orderSummary) : 
                     summary.push({strategy,orders:{date:order_date,bullish:[orderSummary],bearish:[]}});
@@ -144,7 +175,7 @@ export class OrdersRepo {
             const found = trades.find(o => o.strategy == strategy && o.order_date == date && o.order_time == order['time'] && 
                 o.trend == trend && o.symbol == order.symbol && o.leg == 'SL');
             if(found){
-                if(found['status']=='TRADED'){
+                if(found['status']=='TRADED'){                    
                     order['balance'] -= +found['qty'];
                     order['exit'] = found['price'];
                 }
