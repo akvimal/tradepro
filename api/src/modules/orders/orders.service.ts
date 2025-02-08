@@ -85,10 +85,14 @@ export class OrdersService {
         }
     }
 
-    async squareOff(orders){        
+    async squareOff(strategy,orders){        
         const priceList = await this.getLtp(orders);
+        console.log('pricelist: ',priceList);
+        console.log('orders: ',orders);
+        
         const slOrders = [];
-        const legs = await this.ordersRepo.getPendingSlLegs(3, orders.map(o => o['security']));
+        const legs = await this.ordersRepo.getPendingSlLegs(strategy,orders.map(o => o['security']));
+        console.log('legs: ',legs);
         
         for (let index = 0; index < legs.length; index++) {
             const sl = legs[index];
@@ -115,7 +119,12 @@ export class OrdersService {
 
     async getLtp(orders){
         const partner = await this.appConfigService.getPartnerInfo('Dhan');
-        return await this.dhanService.getLtp(this.buildLtpBulkRequest(orders),partner);
+        // console.log('partner: ',partner);
+        
+        const ltpRequest = this.buildLtpBulkRequest(orders);
+        // console.log('LTP Request: ',ltpRequest);
+        
+        return await this.dhanService.getLtp(ltpRequest,partner);
     }
 
       buildLtpBulkRequest(orders){//TODO: this can be moved to partner impl

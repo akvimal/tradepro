@@ -33,11 +33,11 @@ export class OrdersController {
   //  return await this.service.placeOrder(payload); 
   // }
 
-  @Post('/sqroff')
-  async squareOff(@Body() orders:any) {
+  @Post('/sqroff/:id')
+  async squareOff(@Param('id') id:number, @Body() orders:any) {
     console.log('orders received to square:',orders);
     
-   return await this.mqService.publishMessage(Constants.QUEUE_ORDER, {type:Constants.ORDER_CLOSE,orders}).catch(error => console.log(error));
+   return await this.mqService.publishMessage(Constants.QUEUE_ORDER, {type:Constants.ORDER_CLOSE,strategy:id,orders}).catch(error => console.log(error));
   }
 
 

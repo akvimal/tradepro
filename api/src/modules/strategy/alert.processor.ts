@@ -28,16 +28,18 @@ export class AlertProcessor {
 
                 if((direction === 'Bullish' && alert.buy) || (direction == 'Bearish' && alert.sell)) {
                 
-                    const symbols = stocks.split(',');
-                    const prices = trigger_prices.split(',');
-                    for (let index = 0; index < symbols.length; index++) {
-                        const symbol = symbols[index];
-                        const price = prices[index];
+                    // const symbols = stocks.split(',');
+                    // const prices = trigger_prices.split(',');
+                    // for (let index = 0; index < symbols.length; index++) {
+                    //     const symbol = symbols[index];
+                    //     const price = prices[index];
                         
-                        await this.mqService.publishMessage(Constants.QUEUE_ORDER, 
-                            { type:'NEW', payload:{symbol,price,strategy:alert,direction}}).catch(error => console.log(error));  
+                    //     await this.mqService.publishMessage(Constants.QUEUE_ORDER, 
+                    //         { type:'NEW', payload:{symbol,price,strategy:alert,direction}}).catch(error => console.log(error));  
 
-                    }
+                    // }
+                    await this.mqService.publishMessage(Constants.QUEUE_ORDER, 
+                        { type:'NEW', payload:{symbols:stocks,prices:trigger_prices,strategy:alert,direction}}).catch(error => console.log(error));  
                 }
             }
         } 

@@ -27,4 +27,24 @@ export class MasterService {
         order by strike_price ${optionType=='CE'?(itm?'desc':''):(itm?'':'desc')} limit 10`
         return (await this.manager.query(sql))[Math.abs(moneyness)-1];
     }
+
+    // async getOptionsSecurityId(exchange: string, segment:string, 
+    //     symbols: string[], expiry:string,
+    //     strikePrices: number[], optionType: string, moneyness: number) {
+    //       const itm = moneyness < 0;
+    //     let sql = `
+    //     select security_id, display_name as opt_symbol, strike_price::numeric, lot_size 
+    //     from security_master where exch_id = '${exchange}' and segment = '${segment}' and option_type = '${optionType}'`;
+
+    //     const group = [];
+    //     for (let index = 0; index < symbols.length; index++) {
+    //         const symbol = symbols[index];
+    //         group.push(`(underlying_symbol like '${symbol}-${moment(expiry).format('MMMYYYY')}%' 
+    //             and (strike_price::numeric - ${strikePrices[index]}) ${optionType=='PE'?(itm?'>':'<'):(itm?'<':'>')} 0) `)
+    //     }
+    //     sql += `and (${group.join(' or ')})`;
+
+    //     sql += `order by strike_price ${optionType=='CE'?(itm?'desc':''):(itm?'':'desc')} limit 10`;
+    //     return (await this.manager.query(sql))[Math.abs(moneyness)-1];
+    // }
 }

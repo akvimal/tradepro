@@ -82,7 +82,7 @@ export class AlertOrdersComponent {
         const request = this.buildSquareOffRequest(type,security);
         // console.log('Square off: ',request);
         
-        request.length > 0 && this.service.squareOff(this.buildSquareOffRequest(type,security));
+        request.length > 0 && this.service.squareOff(this.alertid,this.buildSquareOffRequest(type,security));
     }
 
     buildSquareOffRequest(type:string,security:string){

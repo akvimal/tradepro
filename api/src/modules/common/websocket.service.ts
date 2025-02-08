@@ -27,6 +27,8 @@ export class WebSocketService implements OnModuleInit, OnModuleDestroy {
 
   async connectToWebSocket() {
     const partner = await this.appConfigService.getPartnerInfo('Dhan');
+    // console.log(partner);
+    
     const {access_token,client_id,feed_url} = partner['config'];
     const endpoint = `${feed_url}&token=${access_token}&clientId=${client_id}&authType=2`;
 

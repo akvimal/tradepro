@@ -142,10 +142,10 @@ export class OrderService {
         });
     }
 
-    squareOff(request:SquareOffOrder[]){
+    squareOff(strategy:string,request:SquareOffOrder[]){
         console.log(`Square off: ${request}`);
         
-        this.http.post(`${this.apiUrl}/sqroff`,request).subscribe(data => {
+        this.http.post(`${this.apiUrl}/sqroff/${strategy}`,request).subscribe(data => {
             console.log('squared');
             
         });

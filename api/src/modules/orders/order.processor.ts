@@ -24,80 +24,89 @@ export class OrderProcessor {
 
     async process(request: any) {
         const {type} = request;
+
         if(type == 'NEW'){
-            const {symbol,price,strategy,direction} = request['payload'];
+            
+            const {symbols,prices,strategy,direction} = request['payload'];
             const {config,balance,virtual,interval,frequency,capital} = strategy;
             const {exchange,segment,instrument,intraday,option,order} = config;
-            
-            const {begin,end,squareoff} = intraday;
+
+            const newOrders = [];
+            // const {begin,end,squareoff} = intraday;
             if(instrument.startsWith('OPT')){
                 const {buy,lots,moneyness} = option;
                 const contractType = this.getOptionContractType(direction);
-                const secInfo = (await this.masterService.getOptionSecurityId(exchange,
-                            segment, symbol, this.expiry[0], price, contractType, +moneyness));
-                const {security_id, opt_symbol, strike_price, lot_size} = secInfo;
-                // console.log(secInfo);
-                const orders = await this.orderService.findOrderBySecurity(strategy['id'],security_id,
-                    this.getOptionOrderType(buy),
-                    intraday!==undefined);
-                // console.log(`Orders found: ${orders.length}`);
-                if(!this.isPendingQtyInOrders(orders)){
                 
-                    if(virtual && order['type']=='MARKET'){
-                        //get LTP of security
-                        const priceList = await this.priceService.getLtp([{exchange,segment,security:security_id}]);
-                        console.log(`LTP[${security_id}]: ${priceList[0].price}`);
-                        const ltp = priceList[0].price;
-                        //for options use lotsize
-                        const {position,cover} = order;
-                        const totalCostPerLot = ltp * lot_size;
-                        let totalCostAllLots = 0;
-                        // console.log('Capital: ',capital);
-                        let qty = 0;
-                        let actualLots = 0;
-                        if(position['units']=='PCNT'){
-                            const fundAllowed = capital * (position['value']/100);
-                            if(lots > 0){
-                                totalCostAllLots = totalCostPerLot * lots;
-                                const totalLots = fundAllowed/totalCostAllLots;
-                                actualLots = Math.round(totalLots);
-                                qty = actualLots * lot_size;
-                            }
-                        }
-                        // console.log(qty);        
-                        let slTriggerPrice = 0;
-                        const {type,sl} = cover;
-                        if(sl['units']=='PCNT'){
-                            slTriggerPrice = ltp * (buy ? (1-(sl['value']/100)):(1+(sl['value']/100)));
-                        }
-                        // console.log('trigger price',slTriggerPrice);
-                        
-                        const orders = this.buildOrderRequest(strategy,opt_symbol, security_id,  direction, qty, ltp, slTriggerPrice,sl['trail'],buy);
-                        
-                        //place order of all legs
-                        await this.orderService.placeOrder(strategy,orders);
-                        //update accounts with cost for the actual qty
-                
-                        // await this.accountService.withdraw(strategy['id'],'New Trade', `${this.getOptionOrderType(buy)} [${opt_symbol}] QTY: ${qty} Price: ${ltp}`,qty * ltp);
+                const symbolArr = symbols.split(',');
+                const priceArr = prices.split(',');
 
-                       
-                    }
-                } else {
-                    //Ignored now, may accumulate more positions later
+                const secIds = [];
+                for (let index = 0; index < symbolArr.length; index++) {
+                    const symbol = symbolArr[index];
+                    const secInfo = (await this.masterService.getOptionSecurityId(exchange,
+                        segment, symbol, this.expiry[0], priceArr[index], contractType, +moneyness));
+                        secIds.push(secInfo['security_id']);
                 }
-            }
+
+                const priceList = await this.priceService.getSecuritiesLtp(exchange,segment,secIds);
+                
+                for (let index = 0; index < symbolArr.length; index++) {
+                    const symbol = symbolArr[index];
+                    const secInfo = (await this.masterService.getOptionSecurityId(exchange,
+                        segment, symbol, this.expiry[0], priceArr[index], contractType, +moneyness));
+                        const {security_id, opt_symbol, strike_price, lot_size} = secInfo;
+
+                
+                    // console.log(secInfo);
+                    const orders = await this.orderService.findOrderBySecurity(strategy['id'],security_id,
+                        this.getOptionOrderType(buy),
+                        intraday!==undefined);
+                    // console.log(`Orders found: ${orders.length}`);
+                    if(!this.isPendingQtyInOrders(orders)){
+                    
+                        if(virtual && order['type']=='MARKET'){
+                            const ltp = priceList[0].price;
+                            //for options use lotsize
+                            const {position,cover} = order;
+                            const totalCostPerLot = ltp * lot_size;
+                            let totalCostAllLots = 0;
+                            
+                            let qty = 0;
+                            let actualLots = 0;
+                            if(position['units']=='PCNT'){
+                                const fundAllowed = capital * (position['value']/100);
+                                if(lots > 0){
+                                    totalCostAllLots = totalCostPerLot * lots;
+                                    const totalLots = fundAllowed/totalCostAllLots;
+                                    actualLots = Math.round(totalLots);
+                                    qty = actualLots * lot_size;
+                                }
+                            }
+                            // console.log(qty);        
+                            let slTriggerPrice = 0;
+                            const {type,sl} = cover;
+                            if(sl['units']=='PCNT'){
+                                slTriggerPrice = ltp * (buy ? (1-(sl['value']/100)):(1+(sl['value']/100)));
+                            }
+                            
+                            const orders = this.buildOrderRequest(strategy,opt_symbol, security_id,  direction, qty, ltp, slTriggerPrice,sl['trail'],buy);
+                            // console.log('orders: ',orders);
+                            //place order of all legs
+                            newOrders.push(orders);
+                        }
+                    }
+                }       
+            }    
+            await this.orderService.placeOrder(strategy,newOrders.flat(1));
         } else if(type === 'CLOSE'){
-                await this.orderService.squareOff(request['orders']);
+            const {strategy} = request;
+                await this.orderService.squareOff(strategy,request['orders']);
         } else {
                 console.log(`UNKNOWN Order Request Type[${type}] in Order Processor`);
         }
         const summary = await this.orderService.getOrderSummary();
         await this.gateway.publishData({type:'ORDER',payload:summary});    
-        // setTimeout(async () => { //Hack
-        //     const summary = await this.orderService.getOrderSummary();
-        //     await this.gateway.publishData({type:'ORDER',payload:summary});    
-        // }, 100);
-  
+     
     }
 
     buildOrderRequest(strategy, symbol, secId, direction, qty, price, triggerPrice, trail, buy){

@@ -12,10 +12,15 @@ export class OrdersRepo {
     constructor (@InjectEntityManager() private manager: EntityManager) {}
 
     async placeOrder(strategy,orders){
+        // console.log('called ...');
         
         await this.manager.transaction(async (manager) => {
+            // console.log('getting account..',strategy);
             const account = await manager.findOne(Account,{where :{alertId:strategy['id']}});
+            // console.log('account: ',account);
+            
             for (const order of orders) {
+                // console.log('saving order ..',order);
                 
                 await manager.save(Order, order);
 
@@ -34,8 +39,18 @@ export class OrdersRepo {
         });
     }
 
-    async getPendingSlLegs(alertId, securityIds){
-        return await this.manager.find(Order, {where:{alertId,leg:'SL',status:'PENDING',securityId: In(securityIds)}});
+    async getPendingSlLegs(strategy,securityIds){
+        // let sql = `select * from orders where leg = 'SL' and status = 'PENDING' `;
+        // let securities = [];
+        // orders.forEach(order => {
+        //     console.log('order >',order);
+        //     securities.push(` (alert_id = ${order['strategy']} and security_id = '${order['security']}')`);
+        // });
+        // // console.log('>>> ',sql);
+        // sql += ` and (${securities.join(' or ')})`;
+        
+        return await this.manager.find(Order, {where:{alertId:strategy,leg:'SL',status:'PENDING',securityId: In(securityIds)}});
+        // return await this.manager.query(sql);
     }
 
     async getPendingSlLeg(alertId, type, securityId){
