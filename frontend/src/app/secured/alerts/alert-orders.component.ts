@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Inject, Input, LOCALE_ID, Output, SimpleChanges } from "@angular/core";
+import { Component, EventEmitter, Inject, Input, Output, SimpleChanges } from "@angular/core";
 import { OrderService } from "../orders/orders.service";
 import { CommonModule, formatDate } from "@angular/common";
 import { WebSocketService } from "../../websocket.service";
@@ -28,32 +28,10 @@ export class AlertOrdersComponent {
     private subscription: Subscription;
     orders:any = [];
 
-    constructor(private wsService: WebSocketService, private service:OrderService, 
-        private alertService:AlertService,
-        private feedService:MarketFeedService,@Inject(LOCALE_ID) public locale: string){
-        this.wsService.receiveMessages().subscribe((message) => {
-            const {type,security,ltp} = message;
-            if(message && type == 'PRICE') {
-                this.orders.bullish && this.orders.bullish.forEach((s:any) => {
-                    if(s.security == security) {
-                        s['ltp'] =  s.balance > 0 ? ltp : s['exit'];
-                        s['change_valu'] = s['ltp'] - +s['price'];
-                        s['change_pcnt'] = (s['ltp'] - +s['price'])/+s['price'];
-                    }
-                });
-                this.orders.bearish && this.orders.bearish.forEach((s:any) => {
-                    if(s.security == security) {
-                        s['ltp'] = s.balance > 0 ? ltp : s['exit'];
-                        s['change_valu'] = +s['price'] - s['ltp'];
-                        s['change_pcnt'] = (+s['price'] - s['ltp'])/+s['price'];
-                    }
-                });
-            
-                if(this.squareAll){
-                    this.squared.emit(false);
-                }
-            }
-          }); 
+    constructor(private wsService: WebSocketService, 
+        private service:OrderService, 
+        private alertService:AlertService){
+       
 
           this.subscription = this.service.orders$
           .subscribe(data => {
@@ -104,7 +82,7 @@ export class AlertOrdersComponent {
         const request = this.buildSquareOffRequest(type,security);
         // console.log('Square off: ',request);
         
-        request.length > 0 && this.service.squareOff(this.buildSquareOffRequest(type,security));
+        request.length > 0 && this.service.squareOff(this.alertid,this.buildSquareOffRequest(type,security));
     }
 
     buildSquareOffRequest(type:string,security:string){
@@ -129,8 +107,4 @@ export class AlertOrdersComponent {
         });
     }
 
-    // getDateFormatted(dt:any){
-    //     // console.log(formatDate(dt,'HH:mm',this.locale));
-    //     return formatDate(dt,'HH:mm',this.locale);
-    // }
 }

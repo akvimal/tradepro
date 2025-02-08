@@ -8,7 +8,7 @@ export class FeedController {
 
   @Post('/request')
   async feedRequest(@Body() payload:any){
-    // console.log('request received',payload);
+    console.log('request received',payload);
 
     const req = {RequestCode : payload['control']};
     if(payload['securities']){

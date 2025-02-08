@@ -2,6 +2,7 @@ import { Inject, Injectable, LoggerService } from "@nestjs/common";
 import { InjectEntityManager, InjectRepository } from "@nestjs/typeorm";
 import { EntityManager, Repository } from "typeorm";
 import * as moment from 'moment';
+import { Alert } from "src/entities/alert.entity";
 
 @Injectable()
 export class AlertService {
@@ -13,10 +14,9 @@ export class AlertService {
     }
 
     async findOne(id:number){
-        const alert = (await this.manager.query(`select a.*, coalesce(t.balance, 0) as balance from alerts a 
-            left join accounts t on t.alert_id = a.id 
-            where a.id = ${id}`))[0];
-        return alert;
+        this.manager.findOne(Alert, {where:{id}});
+        // const alert = (await this.manager.query(`select * from alerts where id = ${id}`))[0];
+        return await this.manager.findOne(Alert, {where:{id}});
     }
 
     async updateTrendFlag(alertid:number,trend:string,on:boolean){

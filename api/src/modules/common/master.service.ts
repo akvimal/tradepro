@@ -15,15 +15,36 @@ export class MasterService {
 
     async getOptionSecurityId(exchange: string, segment:string, 
         symbol: string, expiry:string,
-        strikePrice: number, optionType: string, itm: boolean) {
+        strikePrice: number, optionType: string, moneyness: number) {
+          const itm = moneyness < 0;
         let sql = `
-        select security_id, strike_price::numeric, lot_size 
+        select security_id, display_name as opt_symbol, strike_price::numeric, lot_size 
         from security_master where underlying_symbol like '${symbol}-${moment(expiry).format('MMMYYYY')}%' 
         and exch_id = '${exchange}'
         and segment = '${segment}'
         and option_type = '${optionType}'
         and (strike_price::numeric - ${strikePrice}) ${optionType=='PE'?(itm?'>':'<'):(itm?'<':'>')} 0
         order by strike_price ${optionType=='CE'?(itm?'desc':''):(itm?'':'desc')} limit 10`
-        return this.manager.query(sql);
+        return (await this.manager.query(sql))[Math.abs(moneyness)-1];
     }
+
+    // async getOptionsSecurityId(exchange: string, segment:string, 
+    //     symbols: string[], expiry:string,
+    //     strikePrices: number[], optionType: string, moneyness: number) {
+    //       const itm = moneyness < 0;
+    //     let sql = `
+    //     select security_id, display_name as opt_symbol, strike_price::numeric, lot_size 
+    //     from security_master where exch_id = '${exchange}' and segment = '${segment}' and option_type = '${optionType}'`;
+
+    //     const group = [];
+    //     for (let index = 0; index < symbols.length; index++) {
+    //         const symbol = symbols[index];
+    //         group.push(`(underlying_symbol like '${symbol}-${moment(expiry).format('MMMYYYY')}%' 
+    //             and (strike_price::numeric - ${strikePrices[index]}) ${optionType=='PE'?(itm?'>':'<'):(itm?'<':'>')} 0) `)
+    //     }
+    //     sql += `and (${group.join(' or ')})`;
+
+    //     sql += `order by strike_price ${optionType=='CE'?(itm?'desc':''):(itm?'':'desc')} limit 10`;
+    //     return (await this.manager.query(sql))[Math.abs(moneyness)-1];
+    // }
 }
